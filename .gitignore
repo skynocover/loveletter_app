@@ -1,0 +1,16 @@
+node_modules/**/*
+.expo/*
+npm-debug.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+
+# macOS
+.DS_Store
+GoT_-_Love_Letter.pdf
+lol_tiled_pages_small2.pdf
+love-letter_cards-v1_en.pdf
