@@ -45,7 +45,7 @@ export default function TargetCardScreen() {
     initialize();
   }, []);
 
-  const _goBack = () => console.log('Went back');
+  const _goBack = () => navigation.goBack();
 
   const _handleSearch = () => console.log('Searching');
 
@@ -57,7 +57,6 @@ export default function TargetCardScreen() {
         <Appbar.BackAction onPress={_goBack} />
         <Appbar.Content title="Title" subtitle="Subtitle" />
         <Appbar.Action icon="magnify" onPress={_handleSearch} />
-        <Appbar.Action icon="dots-vertical" onPress={_handleMore} />
       </Appbar.Header>
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <Card style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}>

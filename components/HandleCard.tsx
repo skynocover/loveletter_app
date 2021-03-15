@@ -50,15 +50,7 @@ export default function HandleCard(props: cardProp) {
   }, []);
 
   return (
-    <TouchableWithoutFeedback
-      onPress={() =>
-        navigation.push('TargetCardScreen', {
-          title: card.title,
-          content: card.content,
-          source: card.source,
-        })
-      }
-    >
+    <TouchableWithoutFeedback onPress={() => {}}>
       <Image
         source={card.source}
         style={{
