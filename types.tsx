@@ -1,22 +1,23 @@
 export type RootStackParamList = {
-	Root: undefined;
-	NotFound: undefined;
+  Root: undefined;
+  NotFound: undefined;
 };
 
 export type BottomTabParamList = {
-	TabOne: undefined;
-	TabTwo: undefined;
-	Rule: undefined;
+  HandCard: undefined;
+  TabTwo: undefined;
+  Rule: undefined;
 };
 
-export type TabOneParamList = {
-	TabOneScreen: undefined;
+export type HandCardParamList = {
+  HandleCardScreen: undefined;
+  TargetCardScreen: undefined;
 };
 
 export type TabTwoParamList = {
-	TabTwoScreen: undefined;
+  TabTwoScreen: undefined;
 };
 
 export type RuleParamList = {
-	RuleScreen: undefined;
+  RuleScreen: undefined;
 };

@@ -4,22 +4,25 @@ import { StyleSheet } from 'react-native';
 import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
 import { Avatar, Button, Card, Title, Paragraph } from 'react-native-paper';
-
+import Carousel from 'react-native-snap-carousel'; // Version can be specified in package.json
 import HandleCard from '../components/HandleCard';
 
-export default function TabOneScreen() {
+export default function HandleCardScreen() {
+  const cards: string[] = ['guard', 'countess'];
+
+  const _renderItem = ({ item, index }: any) => {
+    return <HandleCard type={item} />;
+  };
+
   return (
     <View style={styles.container}>
-      {/* <Text style={styles.title}>Tab One</Text> */}
-      {/* <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" /> */}
-      <View style={styles.card}>
-        <HandleCard type={'guard'} />
-        <HandleCard type={'countess'} />
-      </View>
-      <Button icon="camera" mode="contained" onPress={() => console.log('Pressed')}>
-        Press me
-      </Button>
-      {/* <EditScreenInfo path="/screens/TabOneScreen.tsx" /> */}
+      <Carousel
+        data={cards}
+        renderItem={_renderItem}
+        sliderWidth={800}
+        itemWidth={300}
+        layout={'default'}
+      />
     </View>
   );
 }

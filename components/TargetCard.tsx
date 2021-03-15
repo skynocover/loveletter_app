@@ -1,17 +1,14 @@
 import * as React from 'react';
 import { StyleSheet, Image } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 
 import EditScreenInfo from './EditScreenInfo';
 import { Text, View } from './Themed';
 import path from 'path';
 import { Avatar, Button, Card, Title, Paragraph } from 'react-native-paper';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 // import image from '../assets/images/usa';
 
-const LeftContent = (props: any) => <Avatar.Icon {...props} icon="cards" />;
+const LeftContent = (props: any) => <Avatar.Icon {...props} icon="folder" />;
 
 const guard: any = require('../assets/images/usa/guard.png');
 const countess: any = require('../assets/images/usa/countess.png');
@@ -22,27 +19,21 @@ const prince: any = require('../assets/images/usa/prince.png');
 const priness: any = require('../assets/images/usa/priness.png');
 const baron: any = require('../assets/images/usa/baron.png');
 
-const cards: any = require('../assets/images/usa/cards.png');
-const rules: any = require('../assets/images/usa/rules.png');
-
 /////////////////////////
 
 interface cardProp {
   type: string;
 }
 
-export default function HandleCard(props: cardProp) {
+export default function TargetCard(props: cardProp) {
   const [card, setCard] = React.useState<cardtype>({
     title: '',
     content: '',
     source: guard,
   });
 
-  const navigation = useNavigation<StackNavigationProp<any>>();
-
   const initialize = () => {
     setCard(getCardContent(props.type));
-    console.log(card);
   };
 
   React.useEffect(() => {
@@ -50,41 +41,13 @@ export default function HandleCard(props: cardProp) {
   }, []);
 
   return (
-    <TouchableWithoutFeedback
-      onPress={() =>
-        navigation.push('TargetCardScreen', {
-          title: card.title,
-          content: card.content,
-          source: card.source,
-        })
-      }
-    >
-      <Image
-        source={card.source}
-        style={{
-          width: '100%',
-          height: '100%',
-        }}
-        resizeMode="contain"
-      />
-    </TouchableWithoutFeedback>
-
-    // <Card style={{ flex: 1 }}>
-    //   <Card.Title title="Hand Card" subtitle="選擇一張並打出" left={LeftContent} />
-
-    //   <Card.Cover source={card.source} style={{ height: 350 }} resizeMode="contain" />
-
-    //   {/* <Image source={card.source} style={{ width: '100%', height: '100%' }} resizeMode="contain" /> */}
-
-    //   <Card.Content>
-    //     <Title>{card.title}</Title>
-    //     <Paragraph>{card.content}</Paragraph>
-    //   </Card.Content>
-    //   <Card.Actions>
-    //     <Button>打出</Button>
-    //     {/* <Button>Ok</Button> */}
-    //   </Card.Actions>
-    // </Card>
+    <Card>
+      <Card.Content>
+        <Title>{card.title}</Title>
+      </Card.Content>
+      <Card.Cover source={card.source} style={{ width: '100%' }} resizeMode={'contain'} />
+      {/* <Card.Cover source={card.source} style={{ width: '100%', height: 400 }} /> */}
+    </Card>
   );
 }
 

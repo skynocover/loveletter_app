@@ -4,15 +4,24 @@ import { StyleSheet, FlatList } from 'react-native';
 import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
 import { Avatar, Button, Card, Title, Paragraph, List } from 'react-native-paper';
-
+import Carousel from 'react-native-snap-carousel';
 import DisplayCard from '../components/DisplayCard';
 
 export default function RuleScreen() {
+  const data: any = ['cards', 'rules'];
+
+  const _renderItem = ({ item, index }: any) => {
+    return <DisplayCard type={item} />;
+  };
+
   return (
     <View>
-      <FlatList
-        data={[{ key: 'cards' }, { key: 'rules' }]}
-        renderItem={({ item }) => <DisplayCard type={item.key} />}
+      <Carousel
+        data={data}
+        renderItem={_renderItem}
+        sliderWidth={380}
+        itemWidth={300}
+        layout={'default'}
       />
     </View>
   );

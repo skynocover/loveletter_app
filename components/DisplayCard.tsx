@@ -34,12 +34,14 @@ export default function DisplayCard(props: cardProp) {
   }, []);
 
   return (
-    <Card>
-      <Card.Content>
-        <Title>{card.title}</Title>
-      </Card.Content>
-      <Card.Cover source={card.source} />
-    </Card>
+    <Image source={card.source} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+    // <Card>
+    //   <Card.Content>
+    //     <Title>{card.title}</Title>
+    //   </Card.Content>
+    //   <Card.Cover source={card.source} style={{ width: '100%' }} resizeMode={'cover'} />
+    //   {/* <Card.Cover source={card.source} style={{ width: '100%', height: 400 }} /> */}
+    // </Card>
   );
 }
 

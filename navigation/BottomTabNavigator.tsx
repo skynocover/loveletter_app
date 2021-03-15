@@ -5,10 +5,11 @@ import * as React from 'react';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
-import TabOneScreen from '../screens/TabOneScreen';
+import HandleCardScreen from '../screens/HandCardScreen';
 import TabTwoScreen from '../screens/TabTwoScreen';
 import RuleScreen from '../screens/RuleScreen';
-import { BottomTabParamList, TabOneParamList, TabTwoParamList, RuleParamList } from '../types';
+import TargetCardScreen from '../screens/TargetCardScreen';
+import { BottomTabParamList, HandCardParamList, TabTwoParamList, RuleParamList } from '../types';
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -17,12 +18,12 @@ export default function BottomTabNavigator() {
 
   return (
     <BottomTab.Navigator
-      initialRouteName="TabOne"
+      initialRouteName="HandCard"
       tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}
     >
       <BottomTab.Screen
-        name="TabOne"
-        component={TabOneNavigator}
+        name="HandCard"
+        component={HandCardNavigator}
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
         }}
@@ -53,17 +54,22 @@ function TabBarIcon(props: { name: React.ComponentProps<typeof Ionicons>['name']
 
 // Each tab has its own navigation stack, you can read more about this pattern here:
 // https://reactnavigation.org/docs/tab-based-navigation#a-stack-navigator-for-each-tab
-const TabOneStack = createStackNavigator<TabOneParamList>();
+const HandCardStack = createStackNavigator<HandCardParamList>();
 
-function TabOneNavigator() {
+function HandCardNavigator() {
   return (
-    <TabOneStack.Navigator>
-      <TabOneStack.Screen
-        name="TabOneScreen"
-        component={TabOneScreen}
+    <HandCardStack.Navigator>
+      <HandCardStack.Screen
+        name="HandleCardScreen"
+        component={HandleCardScreen}
         options={{ headerTitle: '手牌' }}
       />
-    </TabOneStack.Navigator>
+      <HandCardStack.Screen
+        name="TargetCardScreen"
+        component={TargetCardScreen}
+        options={{ headerTitle: '目標手牌', headerShown: false }}
+      />
+    </HandCardStack.Navigator>
   );
 }
 
