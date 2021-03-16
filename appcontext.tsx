@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 
-const home = "/admin"
+const home = '/admin';
 
 interface AppContextProps {
   loginPage: string;
@@ -13,15 +13,14 @@ interface AppContextProps {
   isAdmin: boolean;
   setIsAdmin: (value: boolean) => void;
 
-  fetch: (
-    method: 'get' | 'post' | 'put' | 'delete',
-    url: string,
-    param?: any,
-  ) => Promise<any>;
+  fetch: (method: 'get' | 'post' | 'put' | 'delete', url: string, param?: any) => Promise<any>;
 
   login: (account: string, password: string) => Promise<any>;
   logout: () => Promise<void>;
   redirect: () => Promise<void>;
+
+  handCard: string[];
+  setHandCard: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 const AppContext = React.createContext<AppContextProps>(undefined!);
@@ -38,6 +37,8 @@ const AppProvider = ({ children }: AppProviderProps) => {
   const [account, setAccount] = React.useState('');
   const [isAdmin, setIsAdmin] = React.useState(false);
 
+  const [handCard, setHandCard] = React.useState<string[]>(['guard', 'countess']);
+
   /////////////////////////////////////////////////////
 
   React.useEffect(() => {
@@ -45,11 +46,7 @@ const AppProvider = ({ children }: AppProviderProps) => {
     axios.defaults.headers.common['Content-Type'] = 'application/json';
   }, []);
 
-  const fetch = async (
-    method: 'get' | 'post' | 'put' | 'delete',
-    url: string,
-    param?: any,
-  ) => {
+  const fetch = async (method: 'get' | 'post' | 'put' | 'delete', url: string, param?: any) => {
     let data: any = null;
 
     try {
@@ -69,8 +66,7 @@ const AppProvider = ({ children }: AppProviderProps) => {
       }
 
       data = response.data;
-    } catch (error) {
-    }
+    } catch (error) {}
 
     return data;
   };
@@ -126,6 +122,9 @@ const AppProvider = ({ children }: AppProviderProps) => {
         login,
         logout,
         redirect,
+
+        handCard,
+        setHandCard,
       }}
     >
       {children}

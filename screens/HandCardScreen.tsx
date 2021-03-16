@@ -7,33 +7,60 @@ import { Appbar, Avatar, Button, Card, Title, Paragraph } from 'react-native-pap
 import Carousel from 'react-native-snap-carousel'; // Version can be specified in package.json
 import HandleCard from '../components/HandleCard';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { AppContext } from '../appcontext';
 
 export default function HandleCardScreen() {
+  const appCtx = React.useContext(AppContext);
+
+  const [handCard, setHandCard] = React.useState<string[]>(['guard', 'countess']);
+
+  const [subTitle, setSubTitle] = React.useState<string>('');
   const cards: string[] = ['guard', 'countess'];
+  // let _carousel = React.useRef<Carousel<any>>();
   let _carousel = React.createRef<any>();
 
   const navigation = useNavigation<StackNavigationProp<any>>();
 
+  const getHandCard = async () => {
+    console.log('Query the card in hand');
+  };
+
+  React.useEffect(() => {
+    getHandCard();
+  }, []);
+
+  // React.useEffect(() => {
+  //   if (_carousel != null) {
+  //     console.log(_carousel.current.currentIndex);
+  //     setSubTitle(getCardContent(cards[_carousel.current.currentIndex]).title);
+  //   }
+  // }, [_carousel.current.currentIndex]);
+
   const _renderItem = ({ item, index }: any) => {
-    return <HandleCard type={item} />;
+    return <HandleCard {...getCardContent(cards[index])} />;
   };
 
   const _handleSearch = () =>
     navigation.push('TargetCardScreen', getCardContent(cards[_carousel.current.currentIndex]));
 
-  const _handleMore = () => console.log('Shown more');
+  const _handleMore = () => {
+    console.log(_carousel.current.currentIndex);
+    getHandCard();
+    // setHandCard(handCard.splice(_carousel.current.currentIndex - 1, 1));
+  };
+
   return (
     <>
-      <Appbar.Header>
+      <Appbar.Header style={{ backgroundColor: '#CD5C5C' }}>
         {/* <Appbar.BackAction onPress={_goBack} /> */}
-        <Appbar.Content title="Title" subtitle="Subtitle" />
-        <Appbar.Action icon="magnify" onPress={_handleSearch} />
-        <Appbar.Action icon="dots-vertical" onPress={_handleMore} />
+        <Appbar.Content title="HandCard" subtitle={subTitle} />
+        {/* <Appbar.Action icon="magnify" onPress={_handleSearch} /> */}
+        <Appbar.Action icon="arrow-up-circle" onPress={_handleMore} />
       </Appbar.Header>
       <View style={styles.container}>
         <Carousel
           ref={_carousel}
-          data={cards}
+          data={handCard}
           renderItem={_renderItem}
           sliderWidth={800}
           itemWidth={300}

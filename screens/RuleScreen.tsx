@@ -1,21 +1,31 @@
 import * as React from 'react';
-import { StyleSheet, FlatList } from 'react-native';
+import { StyleSheet, FlatList, Image } from 'react-native';
 
 import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
-import { Avatar, Button, Card, Title, Paragraph, List } from 'react-native-paper';
+import { Appbar, Avatar, Button, Card, Title, Paragraph, List } from 'react-native-paper';
 import Carousel from 'react-native-snap-carousel';
-import DisplayCard from '../components/DisplayCard';
+
+const cards: any = require('../assets/images/usa/cards.png');
+const rules: any = require('../assets/images/usa/rules.png');
 
 export default function RuleScreen() {
   const data: any = ['cards', 'rules'];
 
   const _renderItem = ({ item, index }: any) => {
-    return <DisplayCard type={item} />;
+    let card = getCardContent(item);
+    return (
+      <Image source={card.source} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+    );
   };
 
   return (
-    <View>
+    <>
+      <Appbar.Header style={{ backgroundColor: '#CD5C5C', margin: 0 }}>
+        {/* <Appbar.BackAction onPress={_goBack} /> */}
+        <Appbar.Content title="Rules" />
+        {/* <Appbar.Action icon="magnify" onPress={_handleSearch} /> */}
+      </Appbar.Header>
       <Carousel
         data={data}
         renderItem={_renderItem}
@@ -23,28 +33,32 @@ export default function RuleScreen() {
         itemWidth={300}
         layout={'default'}
       />
-    </View>
+    </>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 0,
-    height: 1,
-    width: '80%',
-  },
-  item: {
-    padding: 10,
-    fontSize: 18,
-    height: 44,
-  },
-});
+interface cardtype {
+  title: string;
+  source: any;
+}
+
+const getCardContent = (card: string): cardtype => {
+  switch (card) {
+    case 'cards':
+      return {
+        title: '所有卡片',
+        source: cards,
+      };
+    case 'rules':
+      return {
+        title: '規則說明',
+        source: rules,
+      };
+
+    default:
+      return {
+        title: '',
+        source: rules,
+      };
+  }
+};

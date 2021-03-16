@@ -46,7 +46,6 @@ export default function TargetCard(props: cardProp) {
         <Title>{card.title}</Title>
       </Card.Content>
       <Card.Cover source={card.source} style={{ width: '100%' }} resizeMode={'contain'} />
-      {/* <Card.Cover source={card.source} style={{ width: '100%', height: 400 }} /> */}
     </Card>
   );
 }

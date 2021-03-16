@@ -54,9 +54,9 @@ export default function TargetCardScreen() {
   return (
     <>
       <Appbar.Header>
-        <Appbar.BackAction onPress={_goBack} />
-        <Appbar.Content title="Title" subtitle="Subtitle" />
-        <Appbar.Action icon="magnify" onPress={_handleSearch} />
+        <Appbar.BackAction onPress={_goBack} style={{ backgroundColor: 'dark' }} />
+        <Appbar.Content title={card.title} />
+        {/* <Appbar.Action icon="magnify" onPress={_handleSearch} /> */}
       </Appbar.Header>
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <Card style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}>
@@ -66,7 +66,7 @@ export default function TargetCardScreen() {
             resizeMode={'contain'}
           />
           <Card.Content>
-            <Title>{card.title}</Title>
+            {/* <Title>{card.title}</Title> */}
             <Paragraph>{card.content}</Paragraph>
           </Card.Content>
           {/* <Card.Cover source={card.source} style={{ width: '100%', height: 400 }} /> */}
@@ -75,12 +75,3 @@ export default function TargetCardScreen() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  cover: { padding: 5 },
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

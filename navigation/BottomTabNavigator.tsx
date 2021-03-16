@@ -2,14 +2,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
+import { Icon } from '../components/Icon';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import HandleCardScreen from '../screens/HandCardScreen';
-import TabTwoScreen from '../screens/TabTwoScreen';
+import HistoryScreen from '../screens/HistoryScreen';
 import RuleScreen from '../screens/RuleScreen';
 import TargetCardScreen from '../screens/TargetCardScreen';
-import { BottomTabParamList, HandCardParamList, TabTwoParamList, RuleParamList } from '../types';
+import { BottomTabParamList, HandCardParamList, HistoryParamList, RuleParamList } from '../types';
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -25,21 +26,24 @@ export default function BottomTabNavigator() {
         name="HandCard"
         component={HandCardNavigator}
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
+          // tabBarIcon: ({ color }) => (
+          //   <Icon name={'MaterialCommunityIcons/cards'} color={'black'} size={30} />
+          // ),
+          tabBarIcon: ({ color }) => <TabBarIcon name="people-outline" color={color} />,
         }}
       />
       <BottomTab.Screen
-        name="TabTwo"
-        component={TabTwoNavigator}
+        name="History"
+        component={HistoryNavigator}
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="albums-outline" color={color} />,
         }}
       />
       <BottomTab.Screen
         name="Rule"
         component={RuleNavigator}
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="document-text" color={color} />,
         }}
       />
     </BottomTab.Navigator>
@@ -62,28 +66,28 @@ function HandCardNavigator() {
       <HandCardStack.Screen
         name="HandleCardScreen"
         component={HandleCardScreen}
-        options={{ headerTitle: '手牌' }}
+        options={{ headerShown: false }}
       />
       <HandCardStack.Screen
         name="TargetCardScreen"
         component={TargetCardScreen}
-        options={{ headerTitle: '目標手牌', headerShown: false }}
+        options={{ headerShown: false }}
       />
     </HandCardStack.Navigator>
   );
 }
 
-const TabTwoStack = createStackNavigator<TabTwoParamList>();
+const HistoryStack = createStackNavigator<HistoryParamList>();
 
-function TabTwoNavigator() {
+function HistoryNavigator() {
   return (
-    <TabTwoStack.Navigator>
-      <TabTwoStack.Screen
-        name="TabTwoScreen"
-        component={TabTwoScreen}
-        options={{ headerTitle: '場面' }}
+    <HistoryStack.Navigator>
+      <HistoryStack.Screen
+        name="HistoryScreen"
+        component={HistoryScreen}
+        options={{ headerShown: false }}
       />
-    </TabTwoStack.Navigator>
+    </HistoryStack.Navigator>
   );
 }
 
@@ -92,11 +96,7 @@ const RuleStack = createStackNavigator<RuleParamList>();
 function RuleNavigator() {
   return (
     <RuleStack.Navigator>
-      <RuleStack.Screen
-        name="RuleScreen"
-        component={RuleScreen}
-        options={{ headerTitle: '規則' }}
-      />
+      <RuleStack.Screen name="RuleScreen" component={RuleScreen} options={{ headerShown: false }} />
     </RuleStack.Navigator>
   );
 }
