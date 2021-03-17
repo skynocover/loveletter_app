@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
@@ -7,7 +7,7 @@ import { Appbar, Avatar, Button, Card, Title, Paragraph } from 'react-native-pap
 import Carousel from 'react-native-snap-carousel'; // Version can be specified in package.json
 import HandleCard from '../components/HandleCard';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { AppContext } from '../appcontext';
+import { socketIO, AppContext } from '../appcontext';
 
 export default function HandleCardScreen() {
   const appCtx = React.useContext(AppContext);
@@ -26,7 +26,14 @@ export default function HandleCardScreen() {
   };
 
   React.useEffect(() => {
+    socketIO.on('welcome', (data: any) => {
+      console.log(data);
+      Alert.alert('ok?', 'okk??');
+    });
     getHandCard();
+    return () => {
+      socketIO.off('welcome');
+    };
   }, []);
 
   // React.useEffect(() => {
@@ -44,6 +51,7 @@ export default function HandleCardScreen() {
     navigation.push('TargetCardScreen', getCardContent(cards[_carousel.current.currentIndex]));
 
   const _handleMore = () => {
+    socketIO.emit('msg', { aaa: 'bbb' });
     console.log(_carousel.current.currentIndex);
     getHandCard();
     // setHandCard(handCard.splice(_carousel.current.currentIndex - 1, 1));

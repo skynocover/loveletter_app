@@ -1,5 +1,9 @@
 import React from 'react';
 import axios from 'axios';
+import io from 'socket.io-client';
+import { Alert } from 'react-native';
+
+export const socketIO = io('http://192.168.99.162:3002');
 
 const home = '/admin';
 
@@ -18,7 +22,7 @@ interface AppContextProps {
   login: (account: string, password: string) => Promise<any>;
   logout: () => Promise<void>;
   redirect: () => Promise<void>;
-
+  socket: SocketIOClient.Socket;
   handCard: string[];
   setHandCard: React.Dispatch<React.SetStateAction<string[]>>;
 }
@@ -33,6 +37,7 @@ const AppProvider = ({ children }: AppProviderProps) => {
   const [loginPage] = React.useState('/#/login');
   const [homePage] = React.useState('/#/contactus');
   const [modal, setModal] = React.useState<any>(null);
+  const [socket, setSocket] = React.useState<SocketIOClient.Socket>(socketIO);
 
   const [account, setAccount] = React.useState('');
   const [isAdmin, setIsAdmin] = React.useState(false);
@@ -42,8 +47,13 @@ const AppProvider = ({ children }: AppProviderProps) => {
   /////////////////////////////////////////////////////
 
   React.useEffect(() => {
-    axios.defaults.baseURL = '';
+    axios.defaults.baseURL = 'http://192.168.99.162:3002';
     axios.defaults.headers.common['Content-Type'] = 'application/json';
+    // socketIO.on('welcome', () => {
+    //   Alert.alert('ok?', 'ok!!!');
+    //   // socketIO.emit('msg', { aaa: 'bbb' });
+    // });
+    // setSocket(socketIO);
   }, []);
 
   const fetch = async (method: 'get' | 'post' | 'put' | 'delete', url: string, param?: any) => {
@@ -56,10 +66,6 @@ const AppProvider = ({ children }: AppProviderProps) => {
         data: param,
       });
       console.log('response', response.data);
-      if (response.data.errorCode === 9999) {
-        window.location.href = home + loginPage;
-        return null;
-      }
 
       if (response.data.errorCode !== 0) {
         throw new Error(response.data.errorMessage);
@@ -125,6 +131,8 @@ const AppProvider = ({ children }: AppProviderProps) => {
 
         handCard,
         setHandCard,
+
+        socket,
       }}
     >
       {children}

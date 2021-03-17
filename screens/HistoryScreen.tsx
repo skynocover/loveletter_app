@@ -4,52 +4,66 @@ import { RefreshControl, FlatList, StyleSheet } from 'react-native';
 import EditScreenInfo from '../components/EditScreenInfo';
 import { Appbar, Avatar, Button, Card, Title, Paragraph } from 'react-native-paper';
 import { Text, View } from '../components/Themed';
+import { socketIO, AppContext } from '../appcontext';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface historyInfo {
-  User: string;
-  Action: string;
-  Content: string;
+  title: string;
+  content: string;
 }
 
-const ListItem = ({ User, Action, Content }: historyInfo) => {
+const ListItem = ({ title, content }: historyInfo) => {
   return (
     <Card>
       <Card.Content>
-        <Title>{`${User}@${Action}`}</Title>
-        <Paragraph>{Content}</Paragraph>
+        <Title>{title}</Title>
+        <Paragraph>{content}</Paragraph>
       </Card.Content>
     </Card>
   );
 };
 
 export default function HistoryScreen() {
+  const appCtx = React.useContext(AppContext);
   const [refreshing, setRefreshing] = React.useState(false);
 
-  const [history, setHistory] = React.useState<historyInfo[]>([
-    {
-      User: 'aaa',
-      Action: 'Pop',
-      Content: 'A card',
-    },
-    {
-      User: 'bbb',
-      Action: 'Pop',
-      Content: 'Guard',
-    },
-    {
-      User: 'ccc',
-      Action: 'Point',
-      Content: 'aaa',
-    },
-  ]);
+  const [history, setHistory] = React.useState<historyInfo[]>([]);
+
+  const newHistory = (info: historyInfo) => {
+    console.log(info);
+    // history.unshift(info);
+
+    setHistory((prevState: historyInfo[]) => {
+      prevState.unshift(info);
+      return [...prevState];
+    });
+  };
+
+  const newnew = (data: any) => {
+    newHistory(data);
+  };
 
   const init = async () => {
-    console.log('refreshing.....');
+    let data = await appCtx.fetch('get', '/api/history');
+    if (data !== null) {
+      setHistory(data.history.reverse());
+    }
+    socketIO.on('newHistory', newnew);
+    return () => {
+      socketIO.off('newHistory', newnew);
+    };
   };
 
   React.useEffect(() => {
     init();
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log('on focus');
+      init();
+    }, []),
+  );
 
   return (
     <>
