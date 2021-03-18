@@ -2,7 +2,7 @@ import * as React from 'react';
 import { StyleSheet, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-
+import Layout from '../constants/Layout';
 import EditScreenInfo from './EditScreenInfo';
 import { Text, View } from './Themed';
 import path from 'path';
@@ -43,10 +43,7 @@ export default function HandleCard(props: cardtype) {
     >
       <Image
         source={card.source}
-        style={{
-          width: '100%',
-          height: '100%',
-        }}
+        style={{ width: Layout.window.width * 0.8, height: Layout.window.height * 0.8 }}
         resizeMode="contain"
       />
     </TouchableWithoutFeedback>

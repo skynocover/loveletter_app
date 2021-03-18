@@ -4,7 +4,8 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
 import { Appbar, Avatar, Button, Card, Title, Paragraph } from 'react-native-paper';
-import Carousel from 'react-native-snap-carousel'; // Version can be specified in package.json
+import { Carousel } from '../_components/Carousel'; // Version can be specified in package.json
+// import Carousel from 'react-native-snap-carousel'; // Version can be specified in package.json
 import HandleCard from '../components/HandleCard';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { socketIO, AppContext } from '../appcontext';
@@ -36,15 +37,8 @@ export default function HandleCardScreen() {
     };
   }, []);
 
-  // React.useEffect(() => {
-  //   if (_carousel != null) {
-  //     console.log(_carousel.current.currentIndex);
-  //     setSubTitle(getCardContent(cards[_carousel.current.currentIndex]).title);
-  //   }
-  // }, [_carousel.current.currentIndex]);
-
   const _renderItem = ({ item, index }: any) => {
-    return <HandleCard {...getCardContent(cards[index])} />;
+    return <HandleCard {...getCardContent(item)} />;
   };
 
   const _handleSearch = () =>
@@ -57,6 +51,10 @@ export default function HandleCardScreen() {
     // setHandCard(handCard.splice(_carousel.current.currentIndex - 1, 1));
   };
 
+  const onSnap = (index: number) => {
+    console.log(index);
+  };
+
   return (
     <>
       <Appbar.Header style={{ backgroundColor: '#CD5C5C' }}>
@@ -65,17 +63,17 @@ export default function HandleCardScreen() {
         {/* <Appbar.Action icon="magnify" onPress={_handleSearch} /> */}
         <Appbar.Action icon="arrow-up-circle" onPress={_handleMore} />
       </Appbar.Header>
-      <View style={styles.container}>
-        <Carousel
-          ref={_carousel}
-          data={handCard}
-          renderItem={_renderItem}
-          sliderWidth={800}
-          itemWidth={300}
-          layout={'default'}
-          style={{}}
-        />
-      </View>
+      {/* <View style={styles.container}> */}
+      <Carousel
+        // ref={_carousel}
+        onSnapToItem={onSnap}
+        data={handCard}
+        renderItem={_renderItem}
+        sliderWidth={380}
+        itemWidth={300}
+        layout={'default'}
+      />
+      {/* </View> */}
     </>
   );
 }

@@ -4,18 +4,22 @@ import { StyleSheet, FlatList, Image } from 'react-native';
 import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
 import { Appbar, Avatar, Button, Card, Title, Paragraph, List } from 'react-native-paper';
-import Carousel from 'react-native-snap-carousel';
+import { Carousel } from '../_components/Carousel';
+import Layout from '../constants/Layout';
 
 const cards: any = require('../assets/images/usa/cards.png');
 const rules: any = require('../assets/images/usa/rules.png');
 
 export default function RuleScreen() {
-  const data: any = ['cards', 'rules'];
+  const data: string[] = ['cards', 'rules'];
 
   const _renderItem = ({ item, index }: any) => {
-    let card = getCardContent(item);
     return (
-      <Image source={card.source} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+      <Image
+        source={getCardContent(item).source}
+        style={{ width: Layout.window.width * 0.8, height: Layout.window.height * 0.8 }}
+        resizeMode="contain"
+      />
     );
   };
 
@@ -32,7 +36,6 @@ export default function RuleScreen() {
         sliderWidth={380}
         itemWidth={300}
         layout={'default'}
-        style={{}}
       />
     </>
   );

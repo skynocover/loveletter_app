@@ -1,9 +1,11 @@
 import React from 'react';
 import axios from 'axios';
 import io from 'socket.io-client';
-import { Alert } from 'react-native';
+import { Alert, Platform } from 'react-native';
 
-export const socketIO = io('http://192.168.99.162:3002');
+const url = 'http://192.168.99.162:3002';
+
+export const socketIO = io(Platform.OS === 'web' ? '/' : url);
 
 const home = '/admin';
 
@@ -47,13 +49,8 @@ const AppProvider = ({ children }: AppProviderProps) => {
   /////////////////////////////////////////////////////
 
   React.useEffect(() => {
-    axios.defaults.baseURL = 'http://192.168.99.162:3002';
+    axios.defaults.baseURL = Platform.OS === 'web' ? '' : url;
     axios.defaults.headers.common['Content-Type'] = 'application/json';
-    // socketIO.on('welcome', () => {
-    //   Alert.alert('ok?', 'ok!!!');
-    //   // socketIO.emit('msg', { aaa: 'bbb' });
-    // });
-    // setSocket(socketIO);
   }, []);
 
   const fetch = async (method: 'get' | 'post' | 'put' | 'delete', url: string, param?: any) => {

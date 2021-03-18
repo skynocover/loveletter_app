@@ -30,7 +30,7 @@ export default function HistoryScreen() {
   const [history, setHistory] = React.useState<historyInfo[]>([]);
 
   const newHistory = (info: historyInfo) => {
-    console.log(info);
+    // console.log(info);
     // history.unshift(info);
 
     setHistory((prevState: historyInfo[]) => {
