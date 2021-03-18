@@ -44,13 +44,14 @@ export default function HistoryScreen() {
   };
 
   const init = async () => {
+    __DEV__ && socketIO.off('newHistory');
     let data = await appCtx.fetch('get', '/api/history');
     if (data !== null) {
       setHistory(data.history.reverse());
     }
     socketIO.on('newHistory', newnew);
     return () => {
-      socketIO.off('newHistory', newnew);
+      socketIO.off('newHistory');
     };
   };
 

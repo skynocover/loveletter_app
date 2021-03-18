@@ -32,6 +32,7 @@ export default function RuleScreen() {
         sliderWidth={380}
         itemWidth={300}
         layout={'default'}
+        style={{}}
       />
     </>
   );

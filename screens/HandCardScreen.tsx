@@ -73,6 +73,7 @@ export default function HandleCardScreen() {
           sliderWidth={800}
           itemWidth={300}
           layout={'default'}
+          style={{}}
         />
       </View>
     </>
