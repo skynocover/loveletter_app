@@ -23,6 +23,21 @@ export default function RuleScreen() {
     );
   };
 
+  const _webRenderItem = (data: string[]) => {
+    console.log('webRenderItem');
+    return data.map((item) => {
+      return (
+        <div>
+          <Image
+            source={getCardContent(item).source}
+            style={{ width: Layout.window.width * 0.8, height: Layout.window.height * 0.8 }}
+            resizeMode="contain"
+          />
+        </div>
+      );
+    });
+  };
+
   return (
     <>
       <Appbar.Header style={{ backgroundColor: '#CD5C5C', margin: 0 }}>
@@ -30,13 +45,7 @@ export default function RuleScreen() {
         <Appbar.Content title="Rules" />
         {/* <Appbar.Action icon="magnify" onPress={_handleSearch} /> */}
       </Appbar.Header>
-      <Carousel
-        data={data}
-        renderItem={_renderItem}
-        sliderWidth={380}
-        itemWidth={300}
-        layout={'default'}
-      />
+      <Carousel data={data} renderItem={_renderItem} webRenderItem={_webRenderItem} />
     </>
   );
 }

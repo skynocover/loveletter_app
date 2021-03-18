@@ -5,8 +5,10 @@ import { Carousel as AntdCarousel } from 'antd';
 import 'antd/dist/antd.min.css';
 
 interface carouselProp {
+  onSnapToItem?: any;
   data: string[];
-  renderItem: any;
+  // renderItem: any;
+  webRenderItem: any;
 }
 
 const contentStyle: any = {
@@ -17,12 +19,6 @@ const contentStyle: any = {
   background: '#364d79',
 };
 
-export const Carousel = ({ data, renderItem }: carouselProp) => {
-  return (
-    <AntdCarousel>
-      {data.map((prop) => {
-        return <div>{renderItem(prop)}</div>;
-      })}
-    </AntdCarousel>
-  );
+export const Carousel = ({ onSnapToItem, data, webRenderItem }: carouselProp) => {
+  return <AntdCarousel afterChange={onSnapToItem}>{webRenderItem(data)}</AntdCarousel>;
 };

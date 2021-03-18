@@ -41,12 +41,21 @@ export default function HandleCardScreen() {
     return <HandleCard {...getCardContent(item)} />;
   };
 
-  const _handleSearch = () =>
-    navigation.push('TargetCardScreen', getCardContent(cards[_carousel.current.currentIndex]));
+  const _webRenderItem = (data: string[]) => {
+    console.log('webRenderItem');
+    return data.map((item) => {
+      return (
+        <div>
+          <HandleCard {...getCardContent(item)} />
+        </div>
+      );
+    });
+  };
 
   const _handleMore = () => {
+    console.log('handmore');
     socketIO.emit('msg', { aaa: 'bbb' });
-    console.log(_carousel.current.currentIndex);
+    // console.log(_carousel.current.currentIndex);
     getHandCard();
     // setHandCard(handCard.splice(_carousel.current.currentIndex - 1, 1));
   };
@@ -69,9 +78,7 @@ export default function HandleCardScreen() {
         onSnapToItem={onSnap}
         data={handCard}
         renderItem={_renderItem}
-        sliderWidth={380}
-        itemWidth={300}
-        layout={'default'}
+        webRenderItem={_webRenderItem}
       />
       {/* </View> */}
     </>
