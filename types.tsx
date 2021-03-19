@@ -5,6 +5,7 @@ export type RootStackParamList = {
 
 export type BottomTabParamList = {
   HandCard: undefined;
+  Board: undefined;
   History: undefined;
   Rule: undefined;
 };
@@ -12,6 +13,10 @@ export type BottomTabParamList = {
 export type HandCardParamList = {
   HandleCardScreen: undefined;
   TargetCardScreen: undefined;
+};
+
+export type BoardParamList = {
+  BoardScreen: undefined;
 };
 
 export type HistoryParamList = {

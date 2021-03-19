@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { View } from 'react-native';
 import { Carousel as AntdCarousel } from 'antd';
-
+import Layout from '../constants/Layout';
 import 'antd/dist/antd.min.css';
 
 interface carouselProp {

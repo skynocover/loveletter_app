@@ -1,14 +1,16 @@
 const createExpoWebpackConfigAsync = require('@expo/webpack-config');
 
+const url = 'http://192.168.99.162:3002';
+
 module.exports = async (env, argv) => {
   const config = await createExpoWebpackConfigAsync(env, argv);
 
   config.devServer = {
     ...config.devServer,
     proxy: {
-      '/api': 'http://localhost:3002',
+      '/api': url,
       '/socket.io': {
-        target: 'http://localhost:3002',
+        target: url,
         ws: true,
       },
     },

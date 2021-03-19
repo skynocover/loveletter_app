@@ -15,27 +15,45 @@ export default function RuleScreen() {
 
   const _renderItem = ({ item, index }: any) => {
     return (
-      <Image
-        source={getCardContent(item).source}
-        style={{ width: Layout.window.width * 0.8, height: Layout.window.height * 0.8 }}
-        resizeMode="contain"
-      />
+      <View
+        style={{
+          width: Layout.window.width,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Image
+          source={getCardContent(item).source}
+          style={{ width: Layout.window.width * 0.8, height: Layout.window.height * 0.8 }}
+          resizeMode="contain"
+        />
+      </View>
     );
   };
 
   const _webRenderItem = (data: string[]) => {
-    console.log('webRenderItem');
-    return data.map((item) => {
-      return (
-        <div>
-          <Image
-            source={getCardContent(item).source}
-            style={{ width: Layout.window.width * 0.8, height: Layout.window.height * 0.8 }}
-            resizeMode="contain"
-          />
-        </div>
-      );
-    });
+    return (
+      <div
+        style={{
+          display: 'flex',
+          width: Layout.window.width,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        {data.map((item) => {
+          return (
+            <div>
+              <Image
+                source={getCardContent(item).source}
+                style={{ width: Layout.window.width * 0.8, height: Layout.window.height * 0.8 }}
+                resizeMode="contain"
+              />
+            </div>
+          );
+        })}
+      </div>
+    );
   };
 
   return (

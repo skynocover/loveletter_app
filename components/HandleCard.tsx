@@ -40,6 +40,12 @@ export default function HandleCard(props: cardtype) {
       onPress={() => {
         navigation.push('TargetCardScreen', card);
       }}
+      style={{
+        display: 'flex',
+        width: Layout.window.width,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
     >
       <Image
         source={card.source}

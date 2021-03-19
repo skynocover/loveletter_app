@@ -1,81 +1,109 @@
 import * as React from 'react';
-import { StyleSheet, Alert } from 'react-native';
+import { StyleSheet, Alert, FlatList, RefreshControl } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { Appbar, Avatar, Button, Card, Title, Paragraph } from 'react-native-paper';
+import EditScreenInfo from '../components/EditScreenInfo';
+import { Text, View } from '../components/Themed';
+import { Appbar, Avatar, Button, Card, Title, Paragraph, TextInput } from 'react-native-paper';
 import { Carousel } from '../_components/Carousel'; // Version can be specified in package.json
 import HandleCard from '../components/HandleCard';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { socketIO, AppContext } from '../appcontext';
 
-export default function HandleCardScreen() {
+import { useFocusEffect } from '@react-navigation/native';
+
+interface playerInfo {
+  id: string;
+  name: string;
+}
+
+const ListItem = ({ id, name }: playerInfo) => {
+  return (
+    <Card>
+      <Card.Content>
+        <Title>{id}</Title>
+        <Paragraph>{name}</Paragraph>
+      </Card.Content>
+    </Card>
+  );
+};
+
+export default function BoardScreen() {
   const appCtx = React.useContext(AppContext);
 
+  const [players, setPlayers] = React.useState([]);
+  const [name, setName] = React.useState('');
+
+  const [check, setCheck] = React.useState(false);
+
   const [targetIndex, setTargetIndex] = React.useState(0);
-  const [handCard, setHandCard] = React.useState<string[]>(['guard', 'countess']);
 
   const [subTitle, setSubTitle] = React.useState<string>('');
-  const cards: string[] = ['guard', 'countess'];
-  // let _carousel = React.useRef<Carousel<any>>();
-  let _carousel = React.createRef<any>();
 
-  const navigation = useNavigation<StackNavigationProp<any>>();
-
-  const getHandCard = async () => {
-    console.log('Query the card in hand');
+  const getPlayers = async () => {
+    let data = await appCtx.fetch('get', '/api/players');
+    setPlayers(data.players);
   };
 
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log('on focus');
+      getPlayers();
+    }, []),
+  );
+
   React.useEffect(() => {
-    socketIO.on('welcome', (data: any) => {
-      console.log(data);
-      Alert.alert('ok?', 'okk??');
+    __DEV__ && socketIO.off('newPlayer');
+    socketIO.on('newPlayer', (data: any) => {
+      console.log('newplayer:', data);
     });
-    getHandCard();
+    getPlayers();
     return () => {
-      socketIO.off('welcome');
+      socketIO.off('newPlayer');
     };
   }, []);
 
-  const _renderItem = ({ item, index }: any) => {
-    return <HandleCard {...getCardContent(item)} />;
-  };
-
-  const _webRenderItem = (data: string[]) => {
-    console.log('webRenderItem');
-    return data.map((item) => {
-      return (
-        <div>
-          <HandleCard {...getCardContent(item)} />
-        </div>
-      );
+  const regist = async () => {
+    if (name === '') {
+      Alert.alert('請輸入使用者名稱');
+      return;
+    }
+    let data = await appCtx.fetch('post', '/api/players', {
+      player: { id: socketIO.id, name: name },
     });
+    if (data) {
+      setCheck(true);
+    }
   };
 
   const _handleMore = () => {
     console.log(`Target indtx: ${targetIndex}`);
-    socketIO.emit('msg', { aaa: 'bbb', id: socketIO.id });
+    socketIO.emit('msg', { aaa: 'bbb' });
     // console.log(_carousel.current.currentIndex);
-    getHandCard();
     // setHandCard(handCard.splice(_carousel.current.currentIndex - 1, 1));
-  };
-
-  const onSnap = (index: number) => {
-    setTargetIndex(index);
-    // console.log(index);
   };
 
   return (
     <>
       <Appbar.Header style={{ backgroundColor: '#CD5C5C' }}>
-        {/* <Appbar.BackAction onPress={_goBack} /> */}
         <Appbar.Content title="HandCard" subtitle={subTitle} />
-        {/* <Appbar.Action icon="magnify" onPress={_handleSearch} /> */}
-        <Appbar.Action icon="arrow-up-circle" onPress={_handleMore} />
       </Appbar.Header>
-      <Carousel
-        onSnapToItem={onSnap}
-        data={handCard}
-        renderItem={_renderItem}
-        webRenderItem={_webRenderItem}
+      <TextInput
+        label="Name"
+        disabled={check}
+        value={name}
+        onChangeText={(text) => {
+          setName(text);
+        }}
+      />
+      <Button icon="login" mode="contained" disabled={check} onPress={regist}>
+        註冊使用者
+      </Button>
+      <FlatList
+        contentContainerStyle={{ paddingVertical: 20 }}
+        keyExtractor={(item, index) => index.toString()}
+        data={players}
+        renderItem={({ item }) => <ListItem {...item} />}
+        ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
       />
     </>
   );

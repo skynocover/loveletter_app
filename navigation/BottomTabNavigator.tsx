@@ -7,10 +7,17 @@ import { Icon } from '../components/Icon';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import HandleCardScreen from '../screens/HandCardScreen';
+import BoardScreen from '../screens/BoardScreen';
 import HistoryScreen from '../screens/HistoryScreen';
 import RuleScreen from '../screens/RuleScreen';
 import TargetCardScreen from '../screens/TargetCardScreen';
-import { BottomTabParamList, HandCardParamList, HistoryParamList, RuleParamList } from '../types';
+import {
+  BottomTabParamList,
+  HandCardParamList,
+  BoardParamList,
+  HistoryParamList,
+  RuleParamList,
+} from '../types';
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -30,6 +37,13 @@ export default function BottomTabNavigator() {
           //   <Icon name={'MaterialCommunityIcons/cards'} color={'black'} size={30} />
           // ),
           tabBarIcon: ({ color }) => <TabBarIcon name="people-outline" color={color} />,
+        }}
+      />
+      <BottomTab.Screen
+        name="Board"
+        component={BoardNavigator}
+        options={{
+          tabBarIcon: ({ color }) => <TabBarIcon name="albums-outline" color={color} />,
         }}
       />
       <BottomTab.Screen
@@ -74,6 +88,19 @@ function HandCardNavigator() {
         options={{ headerShown: false }}
       />
     </HandCardStack.Navigator>
+  );
+}
+const BoardStack = createStackNavigator<BoardParamList>();
+
+function BoardNavigator() {
+  return (
+    <BoardStack.Navigator>
+      <BoardStack.Screen
+        name="BoardScreen"
+        component={BoardScreen}
+        options={{ headerShown: false }}
+      />
+    </BoardStack.Navigator>
   );
 }
 

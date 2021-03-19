@@ -1,7 +1,7 @@
-import Carousel from 'react-native-snap-carousel';
+import RNCarousel from 'react-native-snap-carousel';
 import React from 'react';
-// export { default as Carousel } from 'react-native-snap-carousel';
 
+import Layout from '../constants/Layout';
 interface CarouselProp {
   onSnapToItem?: any;
   data: string[];
@@ -9,18 +9,15 @@ interface CarouselProp {
   webRenderItem?: any;
 }
 
-const CarouselWeb = ({ onSnapToItem, data, renderItem }: CarouselProp) => {
+export const Carousel = ({ onSnapToItem, data, renderItem }: CarouselProp) => {
   return (
-    <Carousel
-      // ref={_carousel}
+    <RNCarousel
       onSnapToItem={onSnapToItem}
       data={data}
       renderItem={renderItem}
-      sliderWidth={380}
-      itemWidth={300}
+      sliderWidth={Layout.window.width}
+      itemWidth={Layout.window.width}
       layout={'default'}
     />
   );
 };
-
-export { CarouselWeb as Carousel };
