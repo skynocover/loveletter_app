@@ -10,21 +10,11 @@ export const socketIO = io(Platform.OS === 'web' ? '/' : url);
 const home = '/admin';
 
 interface AppContextProps {
-  loginPage: string;
-  homePage: string;
-  setModal: (modal: any) => void;
-
-  account: string;
-  setAccount: (value: string) => void;
-  isAdmin: boolean;
-  setIsAdmin: (value: boolean) => void;
+  name: string;
+  setName: React.Dispatch<React.SetStateAction<string>>;
 
   fetch: (method: 'get' | 'post' | 'put' | 'delete', url: string, param?: any) => Promise<any>;
 
-  login: (account: string, password: string) => Promise<any>;
-  logout: () => Promise<void>;
-  redirect: () => Promise<void>;
-  socket: SocketIOClient.Socket;
   handCard: string[];
   setHandCard: React.Dispatch<React.SetStateAction<string[]>>;
 }
@@ -36,13 +26,7 @@ interface AppProviderProps {
 }
 
 const AppProvider = ({ children }: AppProviderProps) => {
-  const [loginPage] = React.useState('/#/login');
-  const [homePage] = React.useState('/#/contactus');
-  const [modal, setModal] = React.useState<any>(null);
-  const [socket, setSocket] = React.useState<SocketIOClient.Socket>(socketIO);
-
-  const [account, setAccount] = React.useState('');
-  const [isAdmin, setIsAdmin] = React.useState(false);
+  const [name, setName] = React.useState<string>('');
 
   const [handCard, setHandCard] = React.useState<string[]>(['guard', 'countess']);
 
@@ -69,19 +53,11 @@ const AppProvider = ({ children }: AppProviderProps) => {
       }
 
       data = response.data;
-    } catch (error) {}
-
-    return data;
-  };
-
-  const redirect = async () => {
-    const data = await fetch('get', '/api/user/verify');
-    if (data) {
-      setAccount(data.account);
+    } catch (error) {
+      Alert.alert('fail', error.message);
     }
 
-    // const data = false;
-    window.location.href = data ? home + homePage : home + loginPage;
+    return data;
   };
 
   const login = async (account: string, password: string): Promise<any> => {
@@ -89,47 +65,22 @@ const AppProvider = ({ children }: AppProviderProps) => {
       account,
       password,
     });
-
-    if (data) {
-      if (data.errorCode === 0) {
-        window.location.href = home + homePage;
-      } else {
-        window.location.href = home + loginPage;
-      }
-    } else {
-      window.location.href = home + loginPage;
-    }
   };
 
-  const logout = async () => {
-    await fetch('post', '/api/user/logout', {});
-    window.location.href = home + loginPage;
-  };
+  const logout = async () => {};
 
   /////////////////////////////////////////////////////
 
   return (
     <AppContext.Provider
       value={{
-        loginPage,
-        homePage,
-        setModal: (modal: any) => setModal(modal),
-
-        account,
-        setAccount,
-        isAdmin,
-        setIsAdmin,
+        name,
+        setName,
 
         fetch,
 
-        login,
-        logout,
-        redirect,
-
         handCard,
         setHandCard,
-
-        socket,
       }}
     >
       {children}

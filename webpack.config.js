@@ -1,6 +1,6 @@
 const createExpoWebpackConfigAsync = require('@expo/webpack-config');
 
-const url = 'http://192.168.99.162:3002';
+const url = 'http://localhost:3002';
 
 module.exports = async (env, argv) => {
   const config = await createExpoWebpackConfigAsync(env, argv);
