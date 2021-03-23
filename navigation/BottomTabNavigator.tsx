@@ -4,6 +4,11 @@ import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
 import { Icon } from '../components/Icon';
 
+import { AppProvider, socketIO } from '../appcontext';
+
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import HandleCardScreen from '../screens/HandCardScreen';
@@ -23,6 +28,14 @@ const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
 export default function BottomTabNavigator() {
   const colorScheme = useColorScheme();
+
+  const navigation = useNavigation<StackNavigationProp<any>>();
+  React.useEffect(() => {
+    socketIO.on('disconnect', () => {
+      // navigation.push('Board');
+      console.log('return to board');
+    });
+  }, []);
 
   return (
     <BottomTab.Navigator

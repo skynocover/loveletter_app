@@ -44,6 +44,7 @@ export default function BoardScreen() {
 
   const [check, setCheck] = React.useState(false);
   const [ready, setReady] = React.useState(false);
+  const [start, setStart] = React.useState(false);
 
   const [targetIndex, setTargetIndex] = React.useState(0);
 
@@ -59,6 +60,9 @@ export default function BoardScreen() {
 
   useFocusEffect(
     React.useCallback(() => {
+      // if (socketIO.disconnected) {
+      //   socketIO.
+      // }
       console.log('on focus');
       getPlayers();
     }, []),
@@ -133,9 +137,16 @@ export default function BoardScreen() {
   };
 
   const startGame = async () => {
-    let data = await appCtx.fetch('post', '/api/game/start');
+    let data: any;
+    if (start) {
+      data = await appCtx.fetch('post', '/api/game/restart');
+    } else {
+      data = await appCtx.fetch('post', '/api/game/start');
+    }
+
     if (data) {
-      Alert.alert('遊戲開始');
+      Alert.alert(start ? '遊戲重新開始' : '遊戲開始');
+      setStart(!start);
     }
   };
 
@@ -187,7 +198,7 @@ export default function BoardScreen() {
         disabled={!check}
         onPress={startGame}
       >
-        {'開始遊戲'}
+        {start ? '重新開始' : '開始遊戲'}
       </Button>
     </>
   );

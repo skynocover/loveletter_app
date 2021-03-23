@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Appbar, Avatar, Button, Card, Title, Paragraph } from 'react-native-paper';
 import { Carousel } from '../_components/Carousel'; // Version can be specified in package.json
@@ -71,19 +71,21 @@ export default function HandleCardScreen() {
         {/* <Appbar.Action icon="magnify" onPress={_handleSearch} /> */}
         <Appbar.Action icon="arrow-up-circle" onPress={_handleMore} />
       </Appbar.Header>
-      <Carousel
-        onSnapToItem={onSnap}
-        data={handCard}
-        renderItem={_renderItem}
-        webRenderItem={_webRenderItem}
-      />
+      <View style={styles.container}>
+        <Carousel
+          onSnapToItem={onSnap}
+          data={handCard}
+          renderItem={_renderItem}
+          webRenderItem={_webRenderItem}
+        />
+      </View>
     </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },

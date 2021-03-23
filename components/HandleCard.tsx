@@ -42,7 +42,7 @@ export default function HandleCard(props: cardtype) {
       }}
       style={{
         display: 'flex',
-        width: Layout.window.width,
+        // width: Layout.window.width,
         alignItems: 'center',
         justifyContent: 'center',
       }}

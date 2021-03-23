@@ -5,7 +5,10 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
-import { AppProvider } from './appcontext';
+import { AppProvider, socketIO } from './appcontext';
+
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 export default function App() {
   const isLoadingComplete = useCachedResources();

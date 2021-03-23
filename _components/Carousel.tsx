@@ -16,7 +16,7 @@ export const Carousel = ({ onSnapToItem, data, renderItem }: CarouselProp) => {
       data={data}
       renderItem={renderItem}
       sliderWidth={Layout.window.width}
-      itemWidth={Layout.window.width}
+      itemWidth={Layout.window.width * 0.8}
       layout={'default'}
     />
   );
