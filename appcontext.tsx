@@ -2,19 +2,25 @@ import React from 'react';
 import axios from 'axios';
 import io from 'socket.io-client';
 import { Alert, Platform } from 'react-native';
-
+import { Machine, interpret, assign, Interpreter, AnyEventObject } from 'xstate';
 const url = 'http://192.168.99.162:3002';
 
 export const socketIO = io(Platform.OS === 'web' ? '/' : url);
 
-const home = '/admin';
-
 interface AppContextProps {
   name: string;
   setName: React.Dispatch<React.SetStateAction<string>>;
-
+  gameState: string;
   fetch: (method: 'get' | 'post' | 'put' | 'delete', url: string, param?: any) => Promise<any>;
-
+  GameService: Interpreter<
+    any,
+    any,
+    AnyEventObject,
+    {
+      value: any;
+      context: any;
+    }
+  >;
   handCard: string[];
   setHandCard: React.Dispatch<React.SetStateAction<string[]>>;
 }
@@ -28,7 +34,9 @@ interface AppProviderProps {
 const AppProvider = ({ children }: AppProviderProps) => {
   const [name, setName] = React.useState<string>('');
 
-  const [handCard, setHandCard] = React.useState<string[]>(['guard', 'countess']);
+  const [gameState, setGameState] = React.useState<string>('beforeStart');
+
+  const [handCard, setHandCard] = React.useState<string[]>([]);
 
   /////////////////////////////////////////////////////
 
@@ -60,14 +68,77 @@ const AppProvider = ({ children }: AppProviderProps) => {
     return data;
   };
 
-  const login = async (account: string, password: string): Promise<any> => {
-    const data = await fetch('post', `/api/user/login`, {
-      account,
-      password,
-    });
-  };
+  const GameMachine = Machine(
+    {
+      id: 'game',
+      initial: 'beforeStart',
+      states: {
+        beforeStart: {
+          on: {
+            Ready: {
+              target: 'start',
+              actions: ['start'],
+            }, //事件: 更新狀態
+          },
+          onEntry: (state, context) => {
+            setGameState('beforeStart');
+          },
+        },
+        start: {
+          on: {
+            Draw: 'play',
+            Restart: 'beforeStart',
+            Check: { actions: () => {} }, //收到Event時執行並不會轉移state
+            Ready: {
+              target: 'play',
+              actions: (playerNum: any) => {
+                console.log(playerNum);
+              },
+            },
+          },
+          onEntry: (state, context) => {
+            //進入
+            setGameState('start');
+            console.log('entry state: ' + state);
+            console.log('entry context: ' + JSON.stringify(context));
+          },
+          onExit: () => {}, //退出
+        },
+        play: {
+          on: {
+            Next: 'play',
+            Fin: 'finally',
+            Restart: 'beforeStart',
+          },
+          onEntry: (state, context) => {
+            setGameState('play');
+          },
+        },
+        finally: {
+          on: {
+            Check: 'start',
+            Restart: 'beforeStart',
+          },
+          onEntry: (state, context) => {
+            setGameState('finally');
+          },
+        },
+      },
+    },
+    {
+      actions: {
+        // action implementations
+        start: (context, event) => {
+          console.log('context: ' + context);
+          console.log('event: ' + JSON.stringify(event));
+        },
+      },
+    },
+  );
 
-  const logout = async () => {};
+  const GameService = interpret(GameMachine)
+    .onTransition((state, context) => {})
+    .start();
 
   /////////////////////////////////////////////////////
 
@@ -76,8 +147,9 @@ const AppProvider = ({ children }: AppProviderProps) => {
       value={{
         name,
         setName,
-
+        gameState,
         fetch,
+        GameService,
 
         handCard,
         setHandCard,
@@ -89,3 +161,5 @@ const AppProvider = ({ children }: AppProviderProps) => {
 };
 
 export { AppContext, AppProvider };
+
+/////////////////// machine ////////////////////
