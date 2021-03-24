@@ -11,7 +11,6 @@ export default function HandleCardScreen() {
   const appCtx = React.useContext(AppContext);
 
   const [targetIndex, setTargetIndex] = React.useState(0);
-  const [handCard, setHandCard] = React.useState<string[]>(['guard', 'countess']);
 
   const [subTitle, setSubTitle] = React.useState<string>('');
   const cards: string[] = ['guard', 'countess'];
@@ -74,7 +73,7 @@ export default function HandleCardScreen() {
       <View style={styles.container}>
         <Carousel
           onSnapToItem={onSnap}
-          data={handCard}
+          data={appCtx.handCard}
           renderItem={_renderItem}
           webRenderItem={_webRenderItem}
         />

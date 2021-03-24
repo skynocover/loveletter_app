@@ -44,7 +44,6 @@ export default function BoardScreen() {
 
   const [check, setCheck] = React.useState(false);
   const [ready, setReady] = React.useState(false);
-  const [start, setStart] = React.useState(false);
 
   const [targetIndex, setTargetIndex] = React.useState(0);
 
@@ -138,15 +137,14 @@ export default function BoardScreen() {
 
   const startGame = async () => {
     let data: any;
-    if (start) {
-      data = await appCtx.fetch('post', '/api/game/restart');
-    } else {
+    if (appCtx.GameService.state.value === 'beforeStart') {
       data = await appCtx.fetch('post', '/api/game/start');
+    } else {
+      data = await appCtx.fetch('post', '/api/game/restart');
     }
 
     if (data) {
-      Alert.alert(start ? '遊戲重新開始' : '遊戲開始');
-      setStart(!start);
+      Alert.alert(appCtx.GameService.state.value === 'beforeStart' ? '遊戲開始' : '遊戲重新開始');
     }
   };
 
@@ -171,14 +169,13 @@ export default function BoardScreen() {
         }}
       />
       {!check ? (
-        <Button icon="login" mode="contained" disabled={check} onPress={regist}>
+        <Button icon="login" mode="contained" onPress={regist}>
           註冊使用者
         </Button>
       ) : (
         <Button
           icon={ready ? 'checkbox-marked' : 'checkbox-blank-off'}
           mode="contained"
-          disabled={!check}
           onPress={readybtm}
         >
           {ready ? '已準備' : '準備中'}
@@ -192,109 +189,15 @@ export default function BoardScreen() {
         renderItem={({ item }) => <ListItem {...item} />}
         ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
       />
+
       <Button
         icon={'arrow-right-bold-circle'}
         mode="contained"
         disabled={!check}
         onPress={startGame}
       >
-        {start ? '重新開始' : '開始遊戲'}
+        {appCtx.GameService.state.value === 'beforeStart' ? '開始遊戲' : '重新開始'}
       </Button>
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
-  card: {
-    flexDirection: 'row',
-  },
-});
-
-interface cardtype {
-  title: string;
-  content: string;
-  source: any;
-}
-
-const guard: any = require('../assets/images/usa/guard.png');
-const countess: any = require('../assets/images/usa/countess.png');
-const handmaid: any = require('../assets/images/usa/handmaid.png');
-const king: any = require('../assets/images/usa/king.png');
-const priest: any = require('../assets/images/usa/priest.png');
-const prince: any = require('../assets/images/usa/prince.png');
-const priness: any = require('../assets/images/usa/priness.png');
-const baron: any = require('../assets/images/usa/baron.png');
-
-const getCardContent = (card: string): cardtype => {
-  switch (card) {
-    case 'guard':
-      return {
-        title: '衛兵',
-        content: '猜一名對手手牌',
-        source: guard,
-      };
-    case 'handmaid':
-      return {
-        title: '侍女',
-        content: '一輪內不受其他牌影響',
-        source: handmaid,
-      };
-    case 'countess':
-      return {
-        title: '伯爵夫人',
-        content: '手上有國王或王子時必須棄掉',
-        source: countess,
-      };
-    case 'baron':
-      return {
-        title: '男爵',
-        content: '和一名對手比手牌,小者出局',
-        source: baron,
-      };
-    case 'king':
-      return {
-        title: '國王',
-        content: '和對手交換手牌',
-        source: king,
-      };
-    case 'priest':
-      return {
-        title: '神父',
-        content: '看一名對手手牌',
-        source: priest,
-      };
-    case 'prince':
-      return {
-        title: '王子',
-        content: '一名玩家棄掉手牌重抽',
-        source: prince,
-      };
-    case 'priness':
-      return {
-        title: '公主',
-        content: '棄掉公主時出局',
-        source: priness,
-      };
-
-    default:
-      return {
-        title: '',
-        content: '',
-        source: guard,
-      };
-  }
-};

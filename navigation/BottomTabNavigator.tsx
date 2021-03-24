@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
 import { Icon } from '../components/Icon';
 
-import { AppProvider, socketIO } from '../appcontext';
+import { AppContext, socketIO } from '../appcontext';
 
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -27,13 +27,24 @@ import {
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
 export default function BottomTabNavigator() {
+  const appCtx = React.useContext(AppContext);
+
   const colorScheme = useColorScheme();
 
   const navigation = useNavigation<StackNavigationProp<any>>();
+
   React.useEffect(() => {
     socketIO.on('disconnect', () => {
       // navigation.push('Board');
       console.log('return to board');
+    });
+
+    socketIO.on('draw', (title: string) => {
+      appCtx.setHandCard([...appCtx.handCard, title]);
+    });
+
+    socketIO.on('gameState', (state: string) => {
+      appCtx.GameService.send(state);
     });
   }, []);
 

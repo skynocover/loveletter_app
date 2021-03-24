@@ -2,12 +2,11 @@ import * as React from 'react';
 import { StyleSheet, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import Layout from '../constants/Layout';
-import EditScreenInfo from './EditScreenInfo';
 import { Text, View } from './Themed';
-import path from 'path';
 import { Avatar, Button, Card, Title, Paragraph } from 'react-native-paper';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+
+import Layout from '../constants/Layout';
 
 //////////////////////////////////////////////////////
 
