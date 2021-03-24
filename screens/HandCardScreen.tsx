@@ -49,17 +49,26 @@ export default function HandleCardScreen() {
     });
   };
 
-  const _handleMore = () => {
+  const _handleMore = async () => {
     console.log(`Target indtx: ${targetIndex}`);
-    socketIO.emit('msg', { aaa: 'bbb', id: socketIO.id });
+    // socketIO.emit('msg', { aaa: 'bbb', id: socketIO.id });
+    let data = await appCtx.fetch('post', '/api/game/playCard', {
+      id: socketIO.id,
+      card: appCtx.handCard[targetIndex],
+    });
+    console.log(data);
+
+    if (data) {
+      console.log('success handle more');
+      getHandCard();
+    }
+    // console.log(index);
     // console.log(_carousel.current.currentIndex);
-    getHandCard();
     // setHandCard(handCard.splice(_carousel.current.currentIndex - 1, 1));
   };
 
   const onSnap = (index: number) => {
     setTargetIndex(index);
-    // console.log(index);
   };
 
   return (

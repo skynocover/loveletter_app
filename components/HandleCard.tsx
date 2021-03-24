@@ -26,7 +26,7 @@ export default function HandleCard(props: cardtype) {
   const navigation = useNavigation<StackNavigationProp<any>>();
 
   const initialize = () => {
-    console.log('props ', props);
+    // console.log('props ', props);
     setCard(props);
   };
 

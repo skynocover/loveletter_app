@@ -2,8 +2,11 @@ import React from 'react';
 import axios from 'axios';
 import io from 'socket.io-client';
 import { Alert, Platform } from 'react-native';
-import { Machine, interpret, assign, Interpreter, AnyEventObject } from 'xstate';
+
+import { Interpreter, AnyEventObject, Machine, interpret } from 'xstate';
+
 const url = 'http://192.168.99.162:3002';
+// const url = 'http://192.168.0.113:3002';
 
 export const socketIO = io(Platform.OS === 'web' ? '/' : url);
 
@@ -80,14 +83,16 @@ const AppProvider = ({ children }: AppProviderProps) => {
               actions: ['start'],
             }, //事件: 更新狀態
           },
-          onEntry: (state, context) => {
-            setGameState('beforeStart');
-          },
         },
         start: {
           on: {
             Draw: 'play',
-            Restart: 'beforeStart',
+            Restart: {
+              target: 'beforeStart',
+              actions: () => {
+                setGameState('beforeStart');
+              },
+            },
             Check: { actions: () => {} }, //收到Event時執行並不會轉移state
             Ready: {
               target: 'play',

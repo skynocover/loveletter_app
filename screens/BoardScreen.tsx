@@ -26,10 +26,6 @@ const ListItem = ({ id, name, ready }: playerInfo) => {
         subtitle={id}
         left={(props) => (
           <Icon name={ready ? 'AntDesign/checkcircle' : 'Ionicons/md-radio-button-off'} size={25} />
-          // <Avatar.Icon
-          //   {...props}
-          //   icon={ready ? 'checkbox-intermediate' : 'checkbox-blank-outline'}
-          // />
         )}
       />
       <Card.Content>{/* <Paragraph>{ready ? '已準備' : '未準備'}</Paragraph> */}</Card.Content>
@@ -137,14 +133,14 @@ export default function BoardScreen() {
 
   const startGame = async () => {
     let data: any;
-    if (appCtx.GameService.state.value === 'beforeStart') {
+    if (appCtx.gameState === 'beforeStart') {
       data = await appCtx.fetch('post', '/api/game/start');
     } else {
       data = await appCtx.fetch('post', '/api/game/restart');
     }
 
     if (data) {
-      Alert.alert(appCtx.GameService.state.value === 'beforeStart' ? '遊戲開始' : '遊戲重新開始');
+      Alert.alert(appCtx.gameState === 'beforeStart' ? '遊戲開始' : '遊戲重新開始');
     }
   };
 
@@ -196,7 +192,7 @@ export default function BoardScreen() {
         disabled={!check}
         onPress={startGame}
       >
-        {appCtx.GameService.state.value === 'beforeStart' ? '開始遊戲' : '重新開始'}
+        {appCtx.gameState === 'beforeStart' ? '開始遊戲' : '重新開始'}
       </Button>
     </>
   );

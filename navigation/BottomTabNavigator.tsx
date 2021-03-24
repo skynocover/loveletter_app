@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet, Alert, FlatList, RefreshControl } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
@@ -40,6 +41,9 @@ export default function BottomTabNavigator() {
     });
 
     socketIO.on('draw', (title: string) => {
+      if (appCtx.handCard.length === 1) {
+        Alert.alert('輪到您了', '抽牌');
+      }
       appCtx.setHandCard([...appCtx.handCard, title]);
     });
 
