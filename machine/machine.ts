@@ -67,4 +67,4 @@ const GameService = interpret(GameMachine)
   .onTransition((state, context) => {})
   .start();
 
-export default GameService;
+// export default GameService;

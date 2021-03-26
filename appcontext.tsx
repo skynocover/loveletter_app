@@ -13,6 +13,8 @@ export const socketIO = io(Platform.OS === 'web' ? '/' : url);
 interface AppContextProps {
   name: string;
   setName: React.Dispatch<React.SetStateAction<string>>;
+  roomID: string;
+  setRoomID: React.Dispatch<React.SetStateAction<string>>;
   gameState: string;
   fetch: (method: 'get' | 'post' | 'put' | 'delete', url: string, param?: any) => Promise<any>;
   GameService: Interpreter<
@@ -37,6 +39,7 @@ interface AppProviderProps {
 const AppProvider = ({ children }: AppProviderProps) => {
   const [name, setName] = React.useState<string>('');
 
+  const [roomID, setRoomID] = React.useState<string>('');
   const [gameState, setGameState] = React.useState<string>('beforeStart');
 
   const [handCard, setHandCard] = React.useState<string[]>([]);
@@ -78,16 +81,50 @@ const AppProvider = ({ children }: AppProviderProps) => {
       beforeStart: {
         on: {
           Start: 'roundStart',
+          Draw: {
+            actions: (context: any, event: any) => {
+              let title = event.title;
+              console.log('draw Card', title);
+
+              setHandCard((prevState: string[]) => {
+                let newhandCard = [...prevState, title];
+                console.log(newhandCard);
+                return newhandCard;
+              });
+            },
+          },
         },
+
+        // onEntry: () => {
+        //   setGameState('beforeStart');
+        // },
       },
       roundStart: {
         on: {
           Ready: { actions: () => {} },
-          Start: { target: 'beforeStart', actions: () => {} },
+          ReStart: { target: 'beforeStart', actions: () => {} },
+          Draw: {
+            actions: (context: any, event: any) => {
+              Alert.alert('輪到您了', '抽牌');
+
+              let title = event.title;
+              console.log('draw Card', title);
+
+              setHandCard((prevState: string[]) => {
+                let newhandCard = [...prevState, title];
+                console.log(newhandCard);
+                return newhandCard;
+              });
+            },
+          },
         },
-        onEntry: () => {},
+        onEntry: (context: any, event: any) => {
+          console.log('roomID: ', event.roomID);
+          setRoomID(event.roomID);
+          setGameState('roundStart');
+        },
         onExit: () => {
-          io().emit('Game', 'start');
+          setRoomID('');
         }, //退出
       },
     },
@@ -104,6 +141,8 @@ const AppProvider = ({ children }: AppProviderProps) => {
       value={{
         name,
         setName,
+        roomID,
+        setRoomID,
         gameState,
         fetch,
         GameService,

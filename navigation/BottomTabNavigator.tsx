@@ -41,20 +41,43 @@ export default function BottomTabNavigator() {
     });
 
     socketIO.on('draw', (title: string) => {
-      if (appCtx.handCard.length === 1) {
-        Alert.alert('輪到您了', '抽牌');
-      }
-      appCtx.setHandCard([...appCtx.handCard, title]);
+      // console.log('draw card', title);
+      // console.log('card now: ', appCtx.handCard);
+      // appCtx.GameService.send('Draw', { title });
+      appCtx.setHandCard((prevState: string[]) => {
+        let newhandCard = [...prevState, title];
+        console.log(newhandCard);
+        return newhandCard;
+      });
     });
 
-    socketIO.on('gameState', (state: string) => {
-      appCtx.GameService.send(state);
+    socketIO.on('Game', async (state: string, roomID: string) => {
+      console.log('socket Game state: ', state);
+      console.log('socket Game roomID: ', roomID);
+      appCtx.GameService.send(state, { roomID });
+      // appCtx.setRoomID((prevState: string) => {
+      //   return roomID;
+      // });
+
+      Alert.alert('遊戲開始', '確認', [
+        {
+          text: 'OK',
+          onPress: async () => {
+            await appCtx.fetch('post', '/api/game/ready', {
+              roomID: roomID,
+              playerID: socketIO.id,
+            });
+          },
+        },
+      ]);
     });
   }, []);
 
+  const getName = () => appCtx.name;
+
   return (
     <BottomTab.Navigator
-      initialRouteName="HandCard"
+      initialRouteName="Board"
       tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}
     >
       <BottomTab.Screen

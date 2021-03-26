@@ -46,7 +46,10 @@ export default function BoardScreen() {
   const [subTitle, setSubTitle] = React.useState<string>('');
 
   const getPlayers = async () => {
-    let data = await appCtx.fetch('get', '/api/players');
+    let data = await appCtx.fetch(
+      'get',
+      `/api/players/${appCtx.roomID === '' ? 'none' : appCtx.roomID}`,
+    );
     if (data) {
       console.log(data.players);
       setPlayers(data.players);
@@ -136,12 +139,14 @@ export default function BoardScreen() {
     if (appCtx.gameState === 'beforeStart') {
       data = await appCtx.fetch('post', '/api/game/start');
     } else {
-      data = await appCtx.fetch('post', '/api/game/restart');
+      data = await appCtx.fetch('post', '/api/game/restart', {
+        roomID: appCtx.roomID,
+      });
     }
 
-    if (data) {
-      Alert.alert(appCtx.gameState === 'beforeStart' ? '遊戲開始' : '遊戲重新開始');
-    }
+    // if (data) {
+    //   Alert.alert(appCtx.gameState === 'beforeStart' ? '遊戲開始' : '遊戲重新開始');
+    // }
   };
 
   const _handleMore = () => {
@@ -154,7 +159,10 @@ export default function BoardScreen() {
   return (
     <>
       <Appbar.Header style={{ backgroundColor: '#CD5C5C' }}>
-        <Appbar.Content title="Board" subtitle={subTitle} />
+        <Appbar.Content
+          title="Board"
+          subtitle={appCtx.GameService.state.value === 'beforeStart' ? '遊戲大廳' : '房間'}
+        />
       </Appbar.Header>
       <TextInput
         label="Name"
@@ -169,13 +177,15 @@ export default function BoardScreen() {
           註冊使用者
         </Button>
       ) : (
-        <Button
-          icon={ready ? 'checkbox-marked' : 'checkbox-blank-off'}
-          mode="contained"
-          onPress={readybtm}
-        >
-          {ready ? '已準備' : '準備中'}
-        </Button>
+        appCtx.gameState === 'beforeStart' && (
+          <Button
+            icon={ready ? 'checkbox-marked' : 'checkbox-blank-off'}
+            mode="contained"
+            onPress={readybtm}
+          >
+            {ready ? '已準備' : '準備中'}
+          </Button>
+        )
       )}
 
       <FlatList
