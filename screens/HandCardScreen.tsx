@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { Appbar, Avatar, Button, Card, Title, Paragraph } from 'react-native-paper';
+import { Appbar, Text, Avatar, Button, Card, Title, Paragraph } from 'react-native-paper';
 import { Carousel } from '../_components/Carousel'; // Version can be specified in package.json
 import HandleCard from '../components/HandleCard';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -51,17 +51,21 @@ export default function HandleCardScreen() {
 
   const _handleMore = async () => {
     console.log(`Target indtx: ${targetIndex}`);
-    // socketIO.emit('msg', { aaa: 'bbb', id: socketIO.id });
-    let data = await appCtx.fetch('post', '/api/game/playCard', {
-      id: socketIO.id,
-      card: appCtx.handCard[targetIndex],
-    });
-    console.log(data);
 
-    if (data) {
-      console.log('success handle more');
-      getHandCard();
-    }
+    let card = getCardContent(appCtx.handCard[targetIndex]);
+    card.callback();
+
+    // // socketIO.emit('msg', { aaa: 'bbb', id: socketIO.id });
+    // let data = await appCtx.fetch('post', '/api/game/playCard', {
+    //   id: socketIO.id,
+    //   card: targetIndex,
+    // });
+    // console.log(data);
+
+    // if (data) {
+    //   console.log('success handle more');
+    //   getHandCard();
+    // }
     // console.log(index);
     // console.log(_carousel.current.currentIndex);
     // setHandCard(handCard.splice(_carousel.current.currentIndex - 1, 1));
@@ -115,6 +119,7 @@ interface cardtype {
   title: string;
   content: string;
   source: any;
+  callback: any;
 }
 
 const guard: any = require('../assets/images/usa/guard.png');
@@ -127,54 +132,87 @@ const priness: any = require('../assets/images/usa/priness.png');
 const baron: any = require('../assets/images/usa/baron.png');
 
 const getCardContent = (card: string): cardtype => {
+  const appCtx = React.useContext(AppContext);
   switch (card) {
     case 'guard':
       return {
         title: '衛兵',
         content: '猜一名對手手牌',
         source: guard,
+        callback: () => {
+          appCtx.setModalVisible(true);
+          appCtx.setModelContent(<Text>Example Modal. Click outside this area to dismiss.</Text>);
+        },
       };
     case 'handmaid':
       return {
         title: '侍女',
         content: '一輪內不受其他牌影響',
         source: handmaid,
+        callback: () => {
+          appCtx.setModalVisible(true);
+          appCtx.setModelContent(<Text>Example Modal. Click outside this area to dismiss.</Text>);
+        },
       };
     case 'countess':
       return {
         title: '伯爵夫人',
         content: '手上有國王或王子時必須棄掉',
         source: countess,
+        callback: () => {
+          appCtx.setModalVisible(true);
+          appCtx.setModelContent(<Text>Example Modal. Click outside this area to dismiss.</Text>);
+        },
       };
     case 'baron':
       return {
         title: '男爵',
         content: '和一名對手比手牌,小者出局',
         source: baron,
+        callback: () => {
+          appCtx.setModalVisible(true);
+          appCtx.setModelContent(<Text>Example Modal. Click outside this area to dismiss.</Text>);
+        },
       };
     case 'king':
       return {
         title: '國王',
         content: '和對手交換手牌',
         source: king,
+        callback: () => {
+          appCtx.setModalVisible(true);
+          appCtx.setModelContent(<Text>Example Modal. Click outside this area to dismiss.</Text>);
+        },
       };
     case 'priest':
       return {
         title: '神父',
         content: '看一名對手手牌',
         source: priest,
+        callback: () => {
+          appCtx.setModalVisible(true);
+          appCtx.setModelContent(<Text>Example Modal. Click outside this area to dismiss.</Text>);
+        },
       };
     case 'prince':
       return {
         title: '王子',
         content: '一名玩家棄掉手牌重抽',
         source: prince,
+        callback: () => {
+          appCtx.setModalVisible(true);
+          appCtx.setModelContent(<Text>Example Modal. Click outside this area to dismiss.</Text>);
+        },
       };
     case 'priness':
       return {
         title: '公主',
         content: '棄掉公主時出局',
         source: priness,
+        callback: () => {
+          appCtx.setModalVisible(true);
+          appCtx.setModelContent(<Text>Example Modal. Click outside this area to dismiss.</Text>);
+        },
       };
 
     default:
@@ -182,6 +220,7 @@ const getCardContent = (card: string): cardtype => {
         title: '',
         content: '',
         source: guard,
+        callback: () => {},
       };
   }
 };

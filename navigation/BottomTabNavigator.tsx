@@ -43,33 +43,32 @@ export default function BottomTabNavigator() {
     socketIO.on('draw', (title: string) => {
       // console.log('draw card', title);
       // console.log('card now: ', appCtx.handCard);
-      // appCtx.GameService.send('Draw', { title });
-      appCtx.setHandCard((prevState: string[]) => {
-        let newhandCard = [...prevState, title];
-        console.log(newhandCard);
-        return newhandCard;
-      });
+      appCtx.GameService.send('Draw', { title });
+      // appCtx.setHandCard((prevState: string[]) => {
+      //   let newhandCard = [...prevState, title];
+      //   console.log(newhandCard);
+      //   return newhandCard;
+      // });
     });
 
-    socketIO.on('Game', async (state: string, roomID: string) => {
-      console.log('socket Game state: ', state);
-      console.log('socket Game roomID: ', roomID);
-      appCtx.GameService.send(state, { roomID });
-      // appCtx.setRoomID((prevState: string) => {
-      //   return roomID;
-      // });
+    socketIO.on('Game', async (state: string, roomID: string, playersName: string[]) => {
+      // console.log('socket Game state: ', state);
+      // console.log('socket Game roomID: ', roomID);
 
-      Alert.alert('遊戲開始', '確認', [
-        {
-          text: 'OK',
-          onPress: async () => {
-            await appCtx.fetch('post', '/api/game/ready', {
-              roomID: roomID,
-              playerID: socketIO.id,
-            });
+      appCtx.GameService.send(state, { roomID, playersName });
+      if (state === 'Start') {
+        Alert.alert('遊戲開始', '確認', [
+          {
+            text: 'OK',
+            onPress: async () => {
+              await appCtx.fetch('post', '/api/game/ready', {
+                roomID: roomID,
+                playerID: socketIO.id,
+              });
+            },
           },
-        },
-      ]);
+        ]);
+      }
     });
   }, []);
 

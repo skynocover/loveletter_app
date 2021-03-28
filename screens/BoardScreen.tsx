@@ -40,31 +40,44 @@ export default function BoardScreen() {
 
   const [check, setCheck] = React.useState(false);
   const [ready, setReady] = React.useState(false);
+  const [reFresh, setReFresh] = React.useState(false);
 
-  const [targetIndex, setTargetIndex] = React.useState(0);
-
-  const [subTitle, setSubTitle] = React.useState<string>('');
+  const getRoomID = () => appCtx.roomID;
 
   const getPlayers = async () => {
-    let data = await appCtx.fetch(
-      'get',
-      `/api/players/${appCtx.roomID === '' ? 'none' : appCtx.roomID}`,
-    );
+    console.log(getRoomID());
+    let data = await appCtx.fetch('get', `/api/players/${getRoomID()}`);
     if (data) {
-      console.log(data.players);
       setPlayers(data.players);
+
+      for (const p of data.players) {
+        if (p.name === appCtx.name) {
+          setReady(p.ready);
+        }
+      }
+    } else {
+      let data = await appCtx.fetch('get', `/api/players/none`);
+      if (data) {
+        setPlayers(data.players);
+
+        for (const p of data.players) {
+          if (p.name === appCtx.name) {
+            setReady(p.ready);
+          }
+        }
+      }
     }
   };
 
   useFocusEffect(
     React.useCallback(() => {
-      // if (socketIO.disconnected) {
-      //   socketIO.
-      // }
-      console.log('on focus');
-      getPlayers();
+      setReFresh(!reFresh);
     }, []),
   );
+
+  React.useEffect(() => {
+    getPlayers();
+  }, [reFresh]);
 
   React.useEffect(() => {
     __DEV__ && socketIO.off('player');
@@ -142,6 +155,7 @@ export default function BoardScreen() {
       data = await appCtx.fetch('post', '/api/game/restart', {
         roomID: appCtx.roomID,
       });
+      getPlayers();
     }
 
     // if (data) {
@@ -149,19 +163,12 @@ export default function BoardScreen() {
     // }
   };
 
-  const _handleMore = () => {
-    console.log(`Target indtx: ${targetIndex}`);
-    socketIO.emit('msg', { aaa: 'bbb' });
-    // console.log(_carousel.current.currentIndex);
-    // setHandCard(handCard.splice(_carousel.current.currentIndex - 1, 1));
-  };
-
   return (
     <>
       <Appbar.Header style={{ backgroundColor: '#CD5C5C' }}>
         <Appbar.Content
           title="Board"
-          subtitle={appCtx.GameService.state.value === 'beforeStart' ? '遊戲大廳' : '房間'}
+          subtitle={appCtx.gameState === 'beforeStart' ? '遊戲大廳' : `房間 ${appCtx.roomID}`}
         />
       </Appbar.Header>
       <TextInput

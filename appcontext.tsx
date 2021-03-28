@@ -5,10 +5,11 @@ import { Alert, Platform } from 'react-native';
 
 import { Interpreter, AnyEventObject, Machine, interpret } from 'xstate';
 
-const url = 'http://192.168.99.162:3002';
-// const url = 'http://192.168.0.113:3002';
+// const url = 'http://192.168.99.162:3002';
+const url = 'http://192.168.0.113:3002';
 
 export const socketIO = io(Platform.OS === 'web' ? '/' : url);
+// export const socket = () => socketIO;
 
 interface AppContextProps {
   name: string;
@@ -28,6 +29,11 @@ interface AppContextProps {
   >;
   handCard: string[];
   setHandCard: React.Dispatch<React.SetStateAction<string[]>>;
+  roommate: string[];
+  modelVisiable: boolean;
+  setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  modelContent: any;
+  setModelContent: React.Dispatch<any>;
 }
 
 const AppContext = React.createContext<AppContextProps>(undefined!);
@@ -39,10 +45,14 @@ interface AppProviderProps {
 const AppProvider = ({ children }: AppProviderProps) => {
   const [name, setName] = React.useState<string>('');
 
-  const [roomID, setRoomID] = React.useState<string>('');
+  const [roomID, setRoomID] = React.useState<string>('none');
   const [gameState, setGameState] = React.useState<string>('beforeStart');
 
   const [handCard, setHandCard] = React.useState<string[]>([]);
+  const [roommate, setRoommate] = React.useState<string[]>([]);
+
+  const [modelVisiable, setModalVisible] = React.useState<boolean>(false);
+  const [modelContent, setModelContent] = React.useState<any>(null);
 
   /////////////////////////////////////////////////////
 
@@ -102,7 +112,13 @@ const AppProvider = ({ children }: AppProviderProps) => {
       roundStart: {
         on: {
           Ready: { actions: () => {} },
-          ReStart: { target: 'beforeStart', actions: () => {} },
+          ReStart: {
+            target: 'beforeStart',
+            actions: () => {
+              setRoomID('none');
+              setGameState('beforeStart');
+            },
+          },
           Draw: {
             actions: (context: any, event: any) => {
               Alert.alert('輪到您了', '抽牌');
@@ -119,13 +135,18 @@ const AppProvider = ({ children }: AppProviderProps) => {
           },
         },
         onEntry: (context: any, event: any) => {
-          console.log('roomID: ', event.roomID);
-          setRoomID(event.roomID);
+          let roomID: string = event.roomID;
+          console.log('roomID: ', roomID);
+          let roommate: string[] = event.playersName;
+          console.log('playersName: ', roommate);
+          setRoomID((prevState: string) => {
+            return roomID;
+          });
+          setRoommate(roommate);
+
           setGameState('roundStart');
         },
-        onExit: () => {
-          setRoomID('');
-        }, //退出
+        onExit: () => {}, //退出
       },
     },
   });
@@ -149,6 +170,12 @@ const AppProvider = ({ children }: AppProviderProps) => {
 
         handCard,
         setHandCard,
+
+        roommate,
+        modelVisiable,
+        setModalVisible,
+        modelContent,
+        setModelContent,
       }}
     >
       {children}
