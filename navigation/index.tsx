@@ -14,20 +14,12 @@ import { socketIO, AppContext } from '../appcontext';
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   const appCtx = React.useContext(AppContext);
   return (
-    // <Modal
-    //   visible={appCtx.modelVisiable}
-    //   onDismiss={() => {
-    //     appCtx.setModalVisible(false);
-    //   }}
-    //   contentContainerStyle={{ backgroundColor: 'white', padding: 20 }}
-    // >
     <NavigationContainer
       linking={LinkingConfiguration}
       theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
     >
       <RootNavigator />
     </NavigationContainer>
-    // </Modal>
   );
 }
 

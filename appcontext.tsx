@@ -5,8 +5,8 @@ import { Alert, Platform } from 'react-native';
 
 import { Interpreter, AnyEventObject, Machine, interpret } from 'xstate';
 
-// const url = 'http://192.168.99.162:3002';
-const url = 'http://192.168.0.113:3002';
+const url = 'http://192.168.99.162:3002';
+// const url = 'http://192.168.0.113:3002';
 
 export const socketIO = io(Platform.OS === 'web' ? '/' : url);
 // export const socket = () => socketIO;
@@ -114,10 +114,7 @@ const AppProvider = ({ children }: AppProviderProps) => {
           Ready: { actions: () => {} },
           ReStart: {
             target: 'beforeStart',
-            actions: () => {
-              setRoomID('none');
-              setGameState('beforeStart');
-            },
+            actions: () => {},
           },
           Draw: {
             actions: (context: any, event: any) => {
@@ -146,7 +143,11 @@ const AppProvider = ({ children }: AppProviderProps) => {
 
           setGameState('roundStart');
         },
-        onExit: () => {}, //退出
+        onExit: () => {
+          setRoomID('none');
+          setGameState('beforeStart');
+          setHandCard([]);
+        }, //退出
       },
     },
   });

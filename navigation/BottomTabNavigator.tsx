@@ -55,8 +55,8 @@ export default function BottomTabNavigator() {
       // console.log('socket Game state: ', state);
       // console.log('socket Game roomID: ', roomID);
 
-      appCtx.GameService.send(state, { roomID, playersName });
       if (state === 'Start') {
+        appCtx.GameService.send(state, { roomID, playersName });
         Alert.alert('遊戲開始', '確認', [
           {
             text: 'OK',
@@ -68,6 +68,8 @@ export default function BottomTabNavigator() {
             },
           },
         ]);
+      } else {
+        appCtx.GameService.send(state);
       }
     });
   }, []);

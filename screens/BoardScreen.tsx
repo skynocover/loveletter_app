@@ -42,22 +42,12 @@ export default function BoardScreen() {
   const [ready, setReady] = React.useState(false);
   const [reFresh, setReFresh] = React.useState(false);
 
-  const getRoomID = () => appCtx.roomID;
-
   const getPlayers = async () => {
-    console.log(getRoomID());
-    let data = await appCtx.fetch('get', `/api/players/${getRoomID()}`);
+    console.log(appCtx.roomID);
+    let data = await appCtx.fetch('get', `/api/players/${appCtx.roomID}`);
     if (data) {
-      setPlayers(data.players);
-
-      for (const p of data.players) {
-        if (p.name === appCtx.name) {
-          setReady(p.ready);
-        }
-      }
-    } else {
-      let data = await appCtx.fetch('get', `/api/players/none`);
-      if (data) {
+      console.log(data);
+      if (data.players !== undefined) {
         setPlayers(data.players);
 
         for (const p of data.players) {
@@ -65,7 +55,19 @@ export default function BoardScreen() {
             setReady(p.ready);
           }
         }
+      } else {
+        let data = await appCtx.fetch('get', `/api/players/none`);
+        if (data) {
+          setPlayers(data.players);
+
+          for (const p of data.players) {
+            if (p.name === appCtx.name) {
+              setReady(p.ready);
+            }
+          }
+        }
       }
+    } else {
     }
   };
 
