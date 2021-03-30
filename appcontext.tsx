@@ -9,7 +9,6 @@ const url = 'http://192.168.99.162:3002';
 // const url = 'http://192.168.0.113:3002';
 
 export const socketIO = io(Platform.OS === 'web' ? '/' : url);
-// export const socket = () => socketIO;
 
 interface AppContextProps {
   name: string;
@@ -70,7 +69,7 @@ const AppProvider = ({ children }: AppProviderProps) => {
         url,
         data: param,
       });
-      console.log('response', response.data);
+      console.log('API response: ', response.data);
 
       if (response.data.errorCode !== 0) {
         throw new Error(response.data.errorMessage);
@@ -78,7 +77,7 @@ const AppProvider = ({ children }: AppProviderProps) => {
 
       data = response.data;
     } catch (error) {
-      Alert.alert('fail', error.message);
+      Alert.alert('fail', `code: ${error.code}, message: ${error.message}`);
     }
 
     return data;
@@ -94,20 +93,14 @@ const AppProvider = ({ children }: AppProviderProps) => {
           Draw: {
             actions: (context: any, event: any) => {
               let title = event.title;
-              console.log('draw Card', title);
 
               setHandCard((prevState: string[]) => {
                 let newhandCard = [...prevState, title];
-                console.log(newhandCard);
                 return newhandCard;
               });
             },
           },
         },
-
-        // onEntry: () => {
-        //   setGameState('beforeStart');
-        // },
       },
       roundStart: {
         on: {
@@ -118,28 +111,31 @@ const AppProvider = ({ children }: AppProviderProps) => {
           },
           Draw: {
             actions: (context: any, event: any) => {
-              Alert.alert('輪到您了', '抽牌');
-
-              let title = event.title;
-              console.log('draw Card', title);
-
-              setHandCard((prevState: string[]) => {
-                let newhandCard = [...prevState, title];
-                console.log(newhandCard);
-                return newhandCard;
-              });
+              Alert.alert('輪到您了', '', [
+                {
+                  text: '抽牌',
+                  onPress: () => {
+                    let title = event.title;
+                    setHandCard((prevState: string[]) => {
+                      let newhandCard = [...prevState, title];
+                      console.log('after draw card', newhandCard);
+                      return newhandCard;
+                    });
+                  },
+                },
+              ]);
             },
           },
         },
         onEntry: (context: any, event: any) => {
           let roomID: string = event.roomID;
-          console.log('roomID: ', roomID);
           let roommate: string[] = event.playersName;
           console.log('playersName: ', roommate);
+
           setRoomID((prevState: string) => {
             return roomID;
           });
-          setRoommate(roommate);
+          setRoommate(roommate.filter((item) => item !== name));
 
           setGameState('roundStart');
         },

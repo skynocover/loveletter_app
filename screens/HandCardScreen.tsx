@@ -21,6 +21,7 @@ import HandleCard from '../components/HandleCard';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { socketIO, AppContext } from '../appcontext';
 import Layout from '../constants/Layout';
+import { Socket } from 'socket.io-client';
 
 export default function HandleCardScreen() {
   const appCtx = React.useContext(AppContext);
@@ -29,26 +30,9 @@ export default function HandleCardScreen() {
 
   const [subTitle, setSubTitle] = React.useState<string>('');
 
-  const cards: string[] = ['guard', 'countess'];
-  // let _carousel = React.useRef<Carousel<any>>();
   let _carousel = React.createRef<any>();
 
   const navigation = useNavigation<StackNavigationProp<any>>();
-
-  const getHandCard = async () => {
-    console.log('Query the card in hand');
-  };
-
-  React.useEffect(() => {
-    socketIO.on('welcome', (data: any) => {
-      console.log(data);
-      Alert.alert('ok?', 'okk??');
-    });
-    getHandCard();
-    return () => {
-      socketIO.off('welcome');
-    };
-  }, []);
 
   const _renderItem = ({ item, index }: any) => {
     return <HandleCard {...getCardContent(item)} />;
@@ -81,7 +65,7 @@ export default function HandleCardScreen() {
           source: guard,
           callback: () => {
             appCtx.setModalVisible(true);
-            appCtx.setModelContent(<Select type="guard" />);
+            appCtx.setModelContent(<Select index={targetIndex} />);
           },
         };
       case 'handmaid':
@@ -91,11 +75,7 @@ export default function HandleCardScreen() {
           source: handmaid,
           callback: () => {
             appCtx.setModalVisible(true);
-            appCtx.setModelContent(
-              <Text style={{ color: 'white' }}>
-                Example Modal. Click outside this area to dismiss.
-              </Text>,
-            );
+            appCtx.setModelContent(<Select index={targetIndex} />);
           },
         };
       case 'countess':
@@ -105,11 +85,7 @@ export default function HandleCardScreen() {
           source: countess,
           callback: () => {
             appCtx.setModalVisible(true);
-            appCtx.setModelContent(
-              <Text style={{ color: 'white' }}>
-                Example Modal. Click outside this area to dismiss.
-              </Text>,
-            );
+            appCtx.setModelContent(<Select index={targetIndex} />);
           },
         };
       case 'baron':
@@ -119,7 +95,7 @@ export default function HandleCardScreen() {
           source: baron,
           callback: () => {
             appCtx.setModalVisible(true);
-            appCtx.setModelContent(<Select type="baron" />);
+            appCtx.setModelContent(<Select index={targetIndex} />);
           },
         };
       case 'king':
@@ -129,7 +105,7 @@ export default function HandleCardScreen() {
           source: king,
           callback: () => {
             appCtx.setModalVisible(true);
-            appCtx.setModelContent(<Select type="king" />);
+            appCtx.setModelContent(<Select index={targetIndex} />);
           },
         };
       case 'priest':
@@ -139,7 +115,7 @@ export default function HandleCardScreen() {
           source: priest,
           callback: () => {
             appCtx.setModalVisible(true);
-            appCtx.setModelContent(<Select type="priest" />);
+            appCtx.setModelContent(<Select index={targetIndex} />);
           },
         };
       case 'prince':
@@ -149,7 +125,7 @@ export default function HandleCardScreen() {
           source: prince,
           callback: () => {
             appCtx.setModalVisible(true);
-            appCtx.setModelContent(<Select type="prince" />);
+            appCtx.setModelContent(<Select index={targetIndex} />);
           },
         };
       case 'priness':
@@ -159,11 +135,7 @@ export default function HandleCardScreen() {
           source: priness,
           callback: () => {
             appCtx.setModalVisible(true);
-            appCtx.setModelContent(
-              <Text style={{ color: 'white' }}>
-                Example Modal. Click outside this area to dismiss.
-              </Text>,
-            );
+            appCtx.setModelContent(<Select index={targetIndex} />);
           },
         };
 
@@ -224,28 +196,6 @@ interface selectProp {
   roommate: string[];
 }
 
-const A = () => {
-  const [data, setData] = React.useState(true);
-
-  return (
-    <TouchableOpacity
-      style={{ width: 100, height: 100, backgroundColor: data ? 'red' : 'green' }}
-      onPress={() => setData((prevState) => !prevState)}
-    ></TouchableOpacity>
-  );
-};
-
-const B = () => {
-  const [value, setValue] = React.useState('first');
-
-  return (
-    <RadioButton.Group onValueChange={(value) => setValue(value)} value={value}>
-      <RadioButton.Item label="First item" value="first" />
-      <RadioButton.Item label="Second item" value="second" />
-    </RadioButton.Group>
-  );
-};
-
 const styles = StyleSheet.create({
   container: {
     // flex: 1,
@@ -282,11 +232,47 @@ const prince: any = require('../assets/images/usa/prince.png');
 const priness: any = require('../assets/images/usa/priness.png');
 const baron: any = require('../assets/images/usa/baron.png');
 
-const Select = ({ type }: { type: string }) => {
+const Select = ({ index }: { index: number }) => {
   const appCtx = React.useContext(AppContext);
 
   const [selectOpponent, setSelectOpponent] = React.useState('');
   const [selectCard, setSelectCard] = React.useState('');
+  const [handCardType, setHandCardType] = React.useState('');
+
+  React.useEffect(() => {
+    setHandCardType(appCtx.handCard[index]);
+  }, []);
+
+  const check = async () => {
+    appCtx.setModalVisible(false);
+    let data = await appCtx.fetch('post', '/api/game/playCard', {
+      id: socketIO.id,
+      roomID: appCtx.roomID,
+      card: index,
+      content: {
+        opponent: setSelectOpponent,
+        card: setSelectCard,
+      },
+    });
+
+    if (data) {
+      console.log(`success resp play card, index: ${index}`);
+      appCtx.setHandCard((preState) => {
+        return preState.splice(index - 1, 1);
+      });
+    }
+  };
+
+  const Others = ({ card }: { card: string }) => {
+    switch (card) {
+      case 'homemaid':
+        return <Text>至下一輪前不受其他對手卡牌影響</Text>;
+      case 'countess':
+        return <Text>至下一輪前不受其他對手卡牌影響</Text>;
+      default:
+        return <Text>棄掉公主時出局</Text>;
+    }
+  };
 
   const cardType = [
     { label: '神父', value: 'priest' },
@@ -299,37 +285,43 @@ const Select = ({ type }: { type: string }) => {
   ];
   return (
     <>
-      <Text style={{ color: 'white' }}>請選擇一名對手</Text>
-
-      <RadioButton.Group onValueChange={(value) => setSelectOpponent(value)} value={selectOpponent}>
-        {appCtx.roommate.map((item) => (
-          <RadioButton.Item key={item} label={item} value={item} />
-        ))}
-      </RadioButton.Group>
-
-      <Divider style={{ backgroundColor: 'white', marginVertical: 5 }} />
-      {type === 'guard' && (
+      {handCardType === 'homemaid' || handCardType === 'countess' || handCardType === 'priness' ? (
+        <Others card={handCardType} />
+      ) : (
         <>
-          <Text style={{ color: 'white' }}>請選擇一種手牌</Text>
+          <Text style={{ color: 'white' }}>請選擇一名對手</Text>
           <RadioButton.Group
-            onValueChange={(value) => {
-              console.log(value);
-              setSelectCard(value);
-            }}
-            value={selectCard}
+            onValueChange={(value) => setSelectOpponent(value)}
+            value={selectOpponent}
           >
-            {cardType.map((item) => (
-              <RadioButton.Item key={item.label} label={item.label} value={item.value} />
+            {appCtx.roommate.map((item) => (
+              <RadioButton.Item key={item} label={item} value={item} />
             ))}
           </RadioButton.Group>
+          <Divider style={{ backgroundColor: 'white', marginVertical: 5 }} />
+          {handCardType === 'guard' && (
+            <>
+              <Text style={{ color: 'white' }}>請選擇一種手牌</Text>
+              <RadioButton.Group
+                onValueChange={(value) => {
+                  console.log(value);
+                  setSelectCard(value);
+                }}
+                value={selectCard}
+              >
+                {cardType.map((item) => (
+                  <RadioButton.Item key={item.label} label={item.label} value={item.value} />
+                ))}
+              </RadioButton.Group>
+            </>
+          )}
+          <Divider style={{ backgroundColor: 'white', marginVertical: 5 }} />
         </>
       )}
-      <Divider style={{ backgroundColor: 'white', marginVertical: 5 }} />
-      {/* <View style={{ flex: 1 }}> */}
-      <Button icon="check" mode="contained" onPress={() => console.log('Pressed')}>
+
+      <Button icon="check" mode="contained" onPress={check}>
         確認
       </Button>
-      {/* </View> */}
     </>
   );
 };

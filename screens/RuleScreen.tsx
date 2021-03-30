@@ -36,7 +36,7 @@ export default function RuleScreen() {
       <div
         style={{
           display: 'flex',
-          width: Layout.window.width,
+          // width: Layout.window.width,
           alignItems: 'center',
           justifyContent: 'center',
         }}
@@ -59,9 +59,7 @@ export default function RuleScreen() {
   return (
     <>
       <Appbar.Header style={{ backgroundColor: '#CD5C5C', margin: 0 }}>
-        {/* <Appbar.BackAction onPress={_goBack} /> */}
         <Appbar.Content title="Rules" />
-        {/* <Appbar.Action icon="magnify" onPress={_handleSearch} /> */}
       </Appbar.Header>
       <Carousel data={data} renderItem={_renderItem} webRenderItem={_webRenderItem} />
     </>
