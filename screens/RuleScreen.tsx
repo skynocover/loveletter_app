@@ -17,7 +17,6 @@ export default function RuleScreen() {
     return (
       <View
         style={{
-          width: Layout.window.width,
           alignItems: 'center',
           justifyContent: 'center',
         }}
@@ -36,7 +35,7 @@ export default function RuleScreen() {
       <div
         style={{
           display: 'flex',
-          // width: Layout.window.width,
+          width: Layout.window.width,
           alignItems: 'center',
           justifyContent: 'center',
         }}

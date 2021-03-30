@@ -30,16 +30,11 @@ export default function HandleCardScreen() {
 
   const [subTitle, setSubTitle] = React.useState<string>('');
 
-  let _carousel = React.createRef<any>();
-
-  const navigation = useNavigation<StackNavigationProp<any>>();
-
   const _renderItem = ({ item, index }: any) => {
     return <HandleCard {...getCardContent(item)} />;
   };
 
   const _webRenderItem = (data: string[]) => {
-    console.log('webRenderItem');
     return data.map((item) => {
       return (
         <div>
@@ -49,7 +44,7 @@ export default function HandleCardScreen() {
     });
   };
 
-  const _handleMore = async () => {
+  const playCard = async () => {
     console.log(`Target indtx: ${targetIndex}`);
 
     let card = getCardContent(appCtx.handCard[targetIndex]);
@@ -156,10 +151,8 @@ export default function HandleCardScreen() {
   return (
     <>
       <Appbar.Header style={{ backgroundColor: '#CD5C5C' }}>
-        {/* <Appbar.BackAction onPress={_goBack} /> */}
         <Appbar.Content title="HandCard" subtitle={subTitle} />
-        {/* <Appbar.Action icon="magnify" onPress={_handleSearch} /> */}
-        <Appbar.Action icon="arrow-up-circle" onPress={_handleMore} />
+        <Appbar.Action icon="arrow-up-circle" onPress={playCard} />
       </Appbar.Header>
       <View style={styles.container}>
         <Carousel
@@ -178,22 +171,15 @@ export default function HandleCardScreen() {
             }}
             contentContainerStyle={{
               backgroundColor: 'black',
-              // height: Layout.window.height * 0.6,
               margin: Layout.window.width * 0.1,
             }}
           >
             {appCtx.modelContent}
-            {/* <B /> */}
           </Modal>
         </Portal>
       </Provider>
     </>
   );
-}
-
-interface selectProp {
-  type: string;
-  roommate: string[];
 }
 
 const styles = StyleSheet.create({
@@ -258,38 +244,39 @@ const Select = ({ index }: { index: number }) => {
     if (data) {
       console.log(`success resp play card, index: ${index}`);
       appCtx.setHandCard((preState) => {
-        return preState.splice(index - 1, 1);
+        return preState.splice(index, 1);
       });
     }
   };
 
-  const Others = ({ card }: { card: string }) => {
-    switch (card) {
-      case 'homemaid':
-        return <Text>至下一輪前不受其他對手卡牌影響</Text>;
+  const memoizedValue = React.useMemo(() => {
+    switch (handCardType) {
+      case 'handmaid':
+        return '至下一輪前不受其他對手卡牌影響';
       case 'countess':
-        return <Text>至下一輪前不受其他對手卡牌影響</Text>;
+        return '手上有國王或王子時必須棄掉';
       default:
-        return <Text>棄掉公主時出局</Text>;
+        return '棄掉公主時出局';
     }
-  };
+  }, [handCardType]);
 
   const cardType = [
     { label: '神父', value: 'priest' },
     { label: '男爵', value: 'baron' },
-    { label: '侍女', value: 'homemaid' },
+    { label: '侍女', value: 'handmaid' },
     { label: '王子', value: 'prince' },
     { label: '國王', value: 'king' },
     { label: '伯爵夫人', value: 'countess' },
     { label: '公主', value: 'priness' },
   ];
+
   return (
     <>
-      {handCardType === 'homemaid' || handCardType === 'countess' || handCardType === 'priness' ? (
-        <Others card={handCardType} />
+      {handCardType === 'handmaid' || handCardType === 'countess' || handCardType === 'priness' ? (
+        <Text style={{ color: 'white', padding: 15 }}>{memoizedValue}</Text>
       ) : (
         <>
-          <Text style={{ color: 'white' }}>請選擇一名對手</Text>
+          <Text style={{ color: 'white', padding: 5 }}>請選擇一名對手</Text>
           <RadioButton.Group
             onValueChange={(value) => setSelectOpponent(value)}
             value={selectOpponent}
@@ -298,24 +285,17 @@ const Select = ({ index }: { index: number }) => {
               <RadioButton.Item key={item} label={item} value={item} />
             ))}
           </RadioButton.Group>
-          <Divider style={{ backgroundColor: 'white', marginVertical: 5 }} />
           {handCardType === 'guard' && (
             <>
+              <Divider style={{ backgroundColor: 'white', marginVertical: 5 }} />
               <Text style={{ color: 'white' }}>請選擇一種手牌</Text>
-              <RadioButton.Group
-                onValueChange={(value) => {
-                  console.log(value);
-                  setSelectCard(value);
-                }}
-                value={selectCard}
-              >
+              <RadioButton.Group onValueChange={(value) => setSelectCard(value)} value={selectCard}>
                 {cardType.map((item) => (
                   <RadioButton.Item key={item.label} label={item.label} value={item.value} />
                 ))}
               </RadioButton.Group>
             </>
           )}
-          <Divider style={{ backgroundColor: 'white', marginVertical: 5 }} />
         </>
       )}
 
