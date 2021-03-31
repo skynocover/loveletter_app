@@ -231,13 +231,14 @@ const Select = ({ index }: { index: number }) => {
 
   const check = async () => {
     appCtx.setModalVisible(false);
+
     let data = await appCtx.fetch('post', '/api/game/playCard', {
       id: socketIO.id,
       roomID: appCtx.roomID,
       card: index,
       content: {
-        opponent: setSelectOpponent,
-        card: setSelectCard,
+        opponent: selectOpponent,
+        card: selectCard,
       },
     });
 
