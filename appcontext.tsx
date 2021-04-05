@@ -43,6 +43,7 @@ interface AppProviderProps {
 
 const AppProvider = ({ children }: AppProviderProps) => {
   const [name, setName] = React.useState<string>('');
+  const getName = () => name;
 
   const [roomID, setRoomID] = React.useState<string>('none');
   const [gameState, setGameState] = React.useState<string>('beforeStart');
@@ -130,12 +131,11 @@ const AppProvider = ({ children }: AppProviderProps) => {
         onEntry: (context: any, event: any) => {
           let roomID: string = event.roomID;
           let roommate: string[] = event.playersName;
-          console.log('playersName: ', roommate);
 
           setRoomID((prevState: string) => {
             return roomID;
           });
-          setRoommate(roommate.filter((item) => item !== name));
+          setRoommate(roommate);
 
           setGameState('roundStart');
         },

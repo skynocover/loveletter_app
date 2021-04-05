@@ -45,8 +45,6 @@ export default function HandleCardScreen() {
   };
 
   const playCard = async () => {
-    console.log(`Target indtx: ${targetIndex}`);
-
     let card = getCardContent(appCtx.handCard[targetIndex]);
     card.callback();
   };
@@ -99,6 +97,12 @@ export default function HandleCardScreen() {
           content: '和對手交換手牌',
           source: king,
           callback: () => {
+            for (const card of appCtx.handCard) {
+              if (card === 'countess') {
+                Alert.alert('手上有國王或王子時必須打出');
+                return;
+              }
+            }
             appCtx.setModalVisible(true);
             appCtx.setModelContent(<Select index={targetIndex} />);
           },
@@ -119,6 +123,12 @@ export default function HandleCardScreen() {
           content: '一名玩家棄掉手牌重抽',
           source: prince,
           callback: () => {
+            for (const card of appCtx.handCard) {
+              if (card === 'countess') {
+                Alert.alert('手上有國王或王子時必須打出');
+                return;
+              }
+            }
             appCtx.setModalVisible(true);
             appCtx.setModelContent(<Select index={targetIndex} />);
           },
@@ -166,9 +176,7 @@ export default function HandleCardScreen() {
         <Portal>
           <Modal
             visible={appCtx.modelVisiable}
-            onDismiss={() => {
-              appCtx.setModalVisible(false);
-            }}
+            onDismiss={() => appCtx.setModalVisible(false)}
             contentContainerStyle={{
               backgroundColor: 'black',
               margin: Layout.window.width * 0.1,
@@ -224,9 +232,11 @@ const Select = ({ index }: { index: number }) => {
   const [selectOpponent, setSelectOpponent] = React.useState('');
   const [selectCard, setSelectCard] = React.useState('');
   const [handCardType, setHandCardType] = React.useState('');
+  const [roommate, setRoommate] = React.useState<string[]>([]);
 
   React.useEffect(() => {
     setHandCardType(appCtx.handCard[index]);
+    setRoommate(appCtx.roommate.filter((item) => item !== appCtx.name));
   }, []);
 
   const check = async () => {
@@ -244,9 +254,17 @@ const Select = ({ index }: { index: number }) => {
 
     if (data) {
       console.log(`success resp play card, index: ${index}`);
-      appCtx.setHandCard((preState) => {
-        return preState.splice(index, 1);
+      // appCtx.setHandCard((preState) => {
+      //   return preState.splice(index - 1, 1);
+      // });
+
+      let data = await appCtx.fetch('post', '/api/game/getCard', {
+        id: socketIO.id,
+        roomID: appCtx.roomID,
       });
+      if (data) {
+        appCtx.setHandCard(data.handCard);
+      }
     }
   };
 
@@ -282,7 +300,7 @@ const Select = ({ index }: { index: number }) => {
             onValueChange={(value) => setSelectOpponent(value)}
             value={selectOpponent}
           >
-            {appCtx.roommate.map((item) => (
+            {roommate.map((item) => (
               <RadioButton.Item key={item} label={item} value={item} />
             ))}
           </RadioButton.Group>
