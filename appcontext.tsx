@@ -110,7 +110,6 @@ const AppProvider = ({ children }: AppProviderProps) => {
               target: 'beforeStart',
               actions: () => {},
             },
-            card: { actions: ['card'] },
             Draw: { actions: ['draw'] },
           },
           onEntry: (context: any, event: any) => {
@@ -145,29 +144,6 @@ const AppProvider = ({ children }: AppProviderProps) => {
                   console.log('after draw card', newhandCard);
                   return newhandCard;
                 });
-              },
-            },
-          ]);
-        },
-        card: async (context, event) => {
-          // let title = event.title;
-          // setHandCard((prevState: string[]) => {
-          //   let newhandCard = [...prevState, title];
-          //   console.log('after draw card', newhandCard);
-          //   return newhandCard;
-          // });
-          Alert.alert('成功出牌', '', [
-            {
-              text: '確認',
-              onPress: async () => {
-                console.log('bbbbbbbbbbbb');
-                let roomID = event.roomID;
-                console.log(`roomID: ${roomID}`);
-                let data = await fetch('post', '/game/getCard', {
-                  id: socketIO.id,
-                  roomID: event.roomID,
-                });
-                setHandCard(() => data.handCard);
               },
             },
           ]);

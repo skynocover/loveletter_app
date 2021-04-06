@@ -45,20 +45,27 @@ export default function HandleCardScreen() {
     });
   };
 
+  React.useEffect(() => {
+    const init = async () => {
+      let data = await appCtx.fetch('post', '/api/game/getCard', {
+        id: socketIO.id,
+        roomID: appCtx.roomID,
+      });
+      if (data) {
+        appCtx.setHandCard((prevState: string[]) => {
+          let newhandCard = [...data.handCard];
+          console.log('after draw card', newhandCard);
+          return newhandCard;
+        });
+      }
+    };
+
+    init();
+  }, [appCtx.modelVisiable]);
+
   const playCard = async () => {
     let card = getCardContent(appCtx.handCard[targetIndex]);
     card.callback();
-  };
-  React.useEffect(() => {
-    initialize();
-  }, [playbool]);
-  const initialize = () => {
-    console.log('aaaaaaaaaaaaa');
-    appCtx.GameService.send('card', { roomID: appCtx.roomID });
-  };
-
-  const callback = () => {
-    setPlaybool(!playbool);
   };
 
   const getCardContent = (card: string): cardtype => {
@@ -70,7 +77,7 @@ export default function HandleCardScreen() {
           source: guard,
           callback: () => {
             appCtx.setModalVisible(true);
-            appCtx.setModelContent(<Select index={targetIndex} callback={callback} />);
+            appCtx.setModelContent(<Select index={targetIndex} />);
           },
         };
       case 'handmaid':
@@ -80,7 +87,7 @@ export default function HandleCardScreen() {
           source: handmaid,
           callback: () => {
             appCtx.setModalVisible(true);
-            appCtx.setModelContent(<Select index={targetIndex} callback={callback} />);
+            appCtx.setModelContent(<Select index={targetIndex} />);
           },
         };
       case 'countess':
@@ -90,7 +97,7 @@ export default function HandleCardScreen() {
           source: countess,
           callback: () => {
             appCtx.setModalVisible(true);
-            appCtx.setModelContent(<Select index={targetIndex} callback={callback} />);
+            appCtx.setModelContent(<Select index={targetIndex} />);
           },
         };
       case 'baron':
@@ -100,7 +107,7 @@ export default function HandleCardScreen() {
           source: baron,
           callback: () => {
             appCtx.setModalVisible(true);
-            appCtx.setModelContent(<Select index={targetIndex} callback={callback} />);
+            appCtx.setModelContent(<Select index={targetIndex} />);
           },
         };
       case 'king':
@@ -116,7 +123,7 @@ export default function HandleCardScreen() {
               }
             }
             appCtx.setModalVisible(true);
-            appCtx.setModelContent(<Select index={targetIndex} callback={callback} />);
+            appCtx.setModelContent(<Select index={targetIndex} />);
           },
         };
       case 'priest':
@@ -126,7 +133,7 @@ export default function HandleCardScreen() {
           source: priest,
           callback: () => {
             appCtx.setModalVisible(true);
-            appCtx.setModelContent(<Select index={targetIndex} callback={callback} />);
+            appCtx.setModelContent(<Select index={targetIndex} />);
           },
         };
       case 'prince':
@@ -142,7 +149,7 @@ export default function HandleCardScreen() {
               }
             }
             appCtx.setModalVisible(true);
-            appCtx.setModelContent(<Select index={targetIndex} callback={callback} />);
+            appCtx.setModelContent(<Select index={targetIndex} />);
           },
         };
       case 'priness':
@@ -152,7 +159,7 @@ export default function HandleCardScreen() {
           source: priness,
           callback: () => {
             appCtx.setModalVisible(true);
-            appCtx.setModelContent(<Select index={targetIndex} callback={callback} />);
+            appCtx.setModelContent(<Select index={targetIndex} />);
           },
         };
 
@@ -238,7 +245,7 @@ const prince: any = require('../assets/images/usa/prince.png');
 const priness: any = require('../assets/images/usa/priness.png');
 const baron: any = require('../assets/images/usa/baron.png');
 
-const Select = ({ index, callback }: { index: number; callback: any }) => {
+const Select = ({ index }: { index: number }) => {
   const appCtx = React.useContext(AppContext);
 
   const [selectOpponent, setSelectOpponent] = React.useState('');
@@ -282,8 +289,8 @@ const Select = ({ index, callback }: { index: number; callback: any }) => {
 
     if (data) {
       console.log(`success resp play card, index: ${index}`);
+      appCtx.setHandCard([]);
       // appCtx.setHandCard((preState) => preState.splice(index - 1, 1));
-      callback();
     }
   };
 
