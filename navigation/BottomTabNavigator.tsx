@@ -41,20 +41,10 @@ export default function BottomTabNavigator() {
     });
 
     socketIO.on('draw', (title: string) => {
-      // console.log('draw card', title);
-      // console.log('card now: ', appCtx.handCard);
       appCtx.GameService.send('Draw', { title });
-      // appCtx.setHandCard((prevState: string[]) => {
-      //   let newhandCard = [...prevState, title];
-      //   console.log(newhandCard);
-      //   return newhandCard;
-      // });
     });
 
     socketIO.on('Game', async (state: string, roomID: string, playersName: string[]) => {
-      // console.log('socket Game state: ', state);
-      // console.log('socket Game roomID: ', roomID);
-
       if (state === 'Start') {
         appCtx.GameService.send(state, { roomID, playersName });
         Alert.alert('遊戲開始', '確認', [
@@ -73,8 +63,6 @@ export default function BottomTabNavigator() {
       }
     });
   }, []);
-
-  const getName = () => appCtx.name;
 
   return (
     <BottomTab.Navigator

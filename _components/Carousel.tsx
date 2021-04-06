@@ -1,5 +1,6 @@
 import RNCarousel from 'react-native-snap-carousel';
 import React from 'react';
+import { AppContext } from '../appcontext';
 
 import Layout from '../constants/Layout';
 interface CarouselProp {
@@ -10,10 +11,11 @@ interface CarouselProp {
 }
 
 export const Carousel = ({ onSnapToItem, data, renderItem }: CarouselProp) => {
+  const appCtx = React.useContext(AppContext);
   return (
     <RNCarousel
       onSnapToItem={onSnapToItem}
-      data={data}
+      data={appCtx.handCard}
       renderItem={renderItem}
       sliderWidth={Layout.window.width}
       itemWidth={Layout.window.width * 0.8}

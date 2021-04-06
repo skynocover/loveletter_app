@@ -29,6 +29,7 @@ export default function HandleCardScreen() {
   const [targetIndex, setTargetIndex] = React.useState(0);
 
   const [subTitle, setSubTitle] = React.useState<string>('');
+  const [playbool, setPlaybool] = React.useState<boolean>(false);
 
   const _renderItem = ({ item, index }: any) => {
     return <HandleCard {...getCardContent(item)} />;
@@ -48,6 +49,17 @@ export default function HandleCardScreen() {
     let card = getCardContent(appCtx.handCard[targetIndex]);
     card.callback();
   };
+  React.useEffect(() => {
+    initialize();
+  }, [playbool]);
+  const initialize = () => {
+    console.log('aaaaaaaaaaaaa');
+    appCtx.GameService.send('card', { roomID: appCtx.roomID });
+  };
+
+  const callback = () => {
+    setPlaybool(!playbool);
+  };
 
   const getCardContent = (card: string): cardtype => {
     switch (card) {
@@ -58,7 +70,7 @@ export default function HandleCardScreen() {
           source: guard,
           callback: () => {
             appCtx.setModalVisible(true);
-            appCtx.setModelContent(<Select index={targetIndex} />);
+            appCtx.setModelContent(<Select index={targetIndex} callback={callback} />);
           },
         };
       case 'handmaid':
@@ -68,7 +80,7 @@ export default function HandleCardScreen() {
           source: handmaid,
           callback: () => {
             appCtx.setModalVisible(true);
-            appCtx.setModelContent(<Select index={targetIndex} />);
+            appCtx.setModelContent(<Select index={targetIndex} callback={callback} />);
           },
         };
       case 'countess':
@@ -78,7 +90,7 @@ export default function HandleCardScreen() {
           source: countess,
           callback: () => {
             appCtx.setModalVisible(true);
-            appCtx.setModelContent(<Select index={targetIndex} />);
+            appCtx.setModelContent(<Select index={targetIndex} callback={callback} />);
           },
         };
       case 'baron':
@@ -88,7 +100,7 @@ export default function HandleCardScreen() {
           source: baron,
           callback: () => {
             appCtx.setModalVisible(true);
-            appCtx.setModelContent(<Select index={targetIndex} />);
+            appCtx.setModelContent(<Select index={targetIndex} callback={callback} />);
           },
         };
       case 'king':
@@ -99,12 +111,12 @@ export default function HandleCardScreen() {
           callback: () => {
             for (const card of appCtx.handCard) {
               if (card === 'countess') {
-                Alert.alert('手上有國王或王子時必須打出');
+                Alert.alert('手上有國王或王子時必須打出伯爵夫人');
                 return;
               }
             }
             appCtx.setModalVisible(true);
-            appCtx.setModelContent(<Select index={targetIndex} />);
+            appCtx.setModelContent(<Select index={targetIndex} callback={callback} />);
           },
         };
       case 'priest':
@@ -114,7 +126,7 @@ export default function HandleCardScreen() {
           source: priest,
           callback: () => {
             appCtx.setModalVisible(true);
-            appCtx.setModelContent(<Select index={targetIndex} />);
+            appCtx.setModelContent(<Select index={targetIndex} callback={callback} />);
           },
         };
       case 'prince':
@@ -125,12 +137,12 @@ export default function HandleCardScreen() {
           callback: () => {
             for (const card of appCtx.handCard) {
               if (card === 'countess') {
-                Alert.alert('手上有國王或王子時必須打出');
+                Alert.alert('手上有國王或王子時必須打出伯爵夫人');
                 return;
               }
             }
             appCtx.setModalVisible(true);
-            appCtx.setModelContent(<Select index={targetIndex} />);
+            appCtx.setModelContent(<Select index={targetIndex} callback={callback} />);
           },
         };
       case 'priness':
@@ -140,7 +152,7 @@ export default function HandleCardScreen() {
           source: priness,
           callback: () => {
             appCtx.setModalVisible(true);
-            appCtx.setModelContent(<Select index={targetIndex} />);
+            appCtx.setModelContent(<Select index={targetIndex} callback={callback} />);
           },
         };
 
@@ -226,7 +238,7 @@ const prince: any = require('../assets/images/usa/prince.png');
 const priness: any = require('../assets/images/usa/priness.png');
 const baron: any = require('../assets/images/usa/baron.png');
 
-const Select = ({ index }: { index: number }) => {
+const Select = ({ index, callback }: { index: number; callback: any }) => {
   const appCtx = React.useContext(AppContext);
 
   const [selectOpponent, setSelectOpponent] = React.useState('');
@@ -236,8 +248,24 @@ const Select = ({ index }: { index: number }) => {
 
   React.useEffect(() => {
     setHandCardType(appCtx.handCard[index]);
-    setRoommate(appCtx.roommate.filter((item) => item !== appCtx.name));
+    getRoommate();
   }, []);
+
+  const getRoommate = async () => {
+    let data = await appCtx.fetch('get', `/api/opponent/${appCtx.roomID}`);
+    if (data) {
+      if (data.players !== undefined) {
+        let mate = data.players.filter((item: any) => item.name !== appCtx.name && !item.shield);
+
+        let mate2: string[] = [];
+        mate.map((item: any) => {
+          mate2.push(item.name);
+        });
+        console.log(`mate2: ${mate2}`);
+        setRoommate(mate2);
+      }
+    }
+  };
 
   const check = async () => {
     appCtx.setModalVisible(false);
@@ -254,17 +282,8 @@ const Select = ({ index }: { index: number }) => {
 
     if (data) {
       console.log(`success resp play card, index: ${index}`);
-      // appCtx.setHandCard((preState) => {
-      //   return preState.splice(index - 1, 1);
-      // });
-
-      let data = await appCtx.fetch('post', '/api/game/getCard', {
-        id: socketIO.id,
-        roomID: appCtx.roomID,
-      });
-      if (data) {
-        appCtx.setHandCard(data.handCard);
-      }
+      // appCtx.setHandCard((preState) => preState.splice(index - 1, 1));
+      callback();
     }
   };
 

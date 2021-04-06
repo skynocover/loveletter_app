@@ -43,7 +43,6 @@ interface AppProviderProps {
 
 const AppProvider = ({ children }: AppProviderProps) => {
   const [name, setName] = React.useState<string>('');
-  const getName = () => name;
 
   const [roomID, setRoomID] = React.useState<string>('none');
   const [gameState, setGameState] = React.useState<string>('beforeStart');
@@ -70,7 +69,7 @@ const AppProvider = ({ children }: AppProviderProps) => {
         url,
         data: param,
       });
-      console.log('API response: ', response.data);
+      console.log(`API ${url} response: ${JSON.stringify(response.data)}`);
 
       if (response.data.errorCode !== 0) {
         throw new Error(response.data.errorMessage);
@@ -84,69 +83,98 @@ const AppProvider = ({ children }: AppProviderProps) => {
     return data;
   };
 
-  const GameMachine = Machine({
-    id: 'game',
-    initial: 'beforeStart',
-    states: {
-      beforeStart: {
-        on: {
-          Start: 'roundStart',
-          Draw: {
-            actions: (context: any, event: any) => {
-              let title = event.title;
+  const GameMachine = Machine(
+    {
+      id: 'game',
+      initial: 'beforeStart',
+      states: {
+        beforeStart: {
+          on: {
+            Start: 'roundStart',
+            Draw: {
+              actions: (context: any, event: any) => {
+                let title = event.title;
 
-              setHandCard((prevState: string[]) => {
-                let newhandCard = [...prevState, title];
-                return newhandCard;
-              });
+                setHandCard((prevState: string[]) => {
+                  let newhandCard = [...prevState, title];
+                  return newhandCard;
+                });
+              },
             },
           },
         },
-      },
-      roundStart: {
-        on: {
-          Ready: { actions: () => {} },
-          ReStart: {
-            target: 'beforeStart',
-            actions: () => {},
-          },
-          Draw: {
-            actions: (context: any, event: any) => {
-              Alert.alert('輪到您了', '', [
-                {
-                  text: '抽牌',
-                  onPress: () => {
-                    let title = event.title;
-                    setHandCard((prevState: string[]) => {
-                      let newhandCard = [...prevState, title];
-                      console.log('after draw card', newhandCard);
-                      return newhandCard;
-                    });
-                  },
-                },
-              ]);
+        roundStart: {
+          on: {
+            Ready: { actions: () => {} },
+            ReStart: {
+              target: 'beforeStart',
+              actions: () => {},
             },
+            card: { actions: ['card'] },
+            Draw: { actions: ['draw'] },
           },
-        },
-        onEntry: (context: any, event: any) => {
-          let roomID: string = event.roomID;
-          let roommate: string[] = event.playersName;
+          onEntry: (context: any, event: any) => {
+            let roomID: string = event.roomID;
+            let roommate: string[] = event.playersName;
 
-          setRoomID((prevState: string) => {
-            return roomID;
-          });
-          setRoommate(roommate);
+            setRoomID((prevState: string) => {
+              return roomID;
+            });
+            setRoommate(roommate);
 
-          setGameState('roundStart');
+            setGameState('roundStart');
+          },
+          onExit: () => {
+            setRoomID('none');
+            setGameState('beforeStart');
+            setHandCard([]);
+          }, //退出
         },
-        onExit: () => {
-          setRoomID('none');
-          setGameState('beforeStart');
-          setHandCard([]);
-        }, //退出
       },
     },
-  });
+    {
+      actions: {
+        draw: async (context, event) => {
+          Alert.alert('輪到您了', '', [
+            {
+              text: '抽牌',
+              onPress: async () => {
+                let title = event.title;
+                setHandCard((prevState: string[]) => {
+                  let newhandCard = [...prevState, title];
+                  console.log('after draw card', newhandCard);
+                  return newhandCard;
+                });
+              },
+            },
+          ]);
+        },
+        card: async (context, event) => {
+          // let title = event.title;
+          // setHandCard((prevState: string[]) => {
+          //   let newhandCard = [...prevState, title];
+          //   console.log('after draw card', newhandCard);
+          //   return newhandCard;
+          // });
+          Alert.alert('成功出牌', '', [
+            {
+              text: '確認',
+              onPress: async () => {
+                console.log('bbbbbbbbbbbb');
+                let roomID = event.roomID;
+                console.log(`roomID: ${roomID}`);
+                let data = await fetch('post', '/game/getCard', {
+                  id: socketIO.id,
+                  roomID: event.roomID,
+                });
+                setHandCard(() => data.handCard);
+              },
+            },
+          ]);
+        },
+      },
+    },
+  );
 
   const GameService = interpret(GameMachine)
     .onTransition((state, context) => {})
