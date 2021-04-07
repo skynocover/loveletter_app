@@ -33,6 +33,10 @@ interface AppContextProps {
   setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
   modelContent: any;
   setModelContent: React.Dispatch<any>;
+  snackVisiable: boolean;
+  setSnackBarVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  snackContent: string;
+  setSnackContent: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const AppContext = React.createContext<AppContextProps>(undefined!);
@@ -52,6 +56,9 @@ const AppProvider = ({ children }: AppProviderProps) => {
 
   const [modelVisiable, setModalVisible] = React.useState<boolean>(false);
   const [modelContent, setModelContent] = React.useState<any>(null);
+
+  const [snackVisiable, setSnackBarVisible] = React.useState<boolean>(false);
+  const [snackContent, setSnackContent] = React.useState<string>('');
 
   /////////////////////////////////////////////////////
 
@@ -105,12 +112,13 @@ const AppProvider = ({ children }: AppProviderProps) => {
         },
         roundStart: {
           on: {
-            Ready: { actions: () => {} },
+            // Ready: { actions: () => {} },
             ReStart: {
               target: 'beforeStart',
-              actions: () => {},
+              actions: ['restart'],
             },
             Draw: { actions: ['draw'] },
+            End: 'End',
           },
           onEntry: (context: any, event: any) => {
             let roomID: string = event.roomID;
@@ -123,11 +131,20 @@ const AppProvider = ({ children }: AppProviderProps) => {
 
             setGameState('roundStart');
           },
-          onExit: () => {
-            setRoomID('none');
-            setGameState('beforeStart');
-            setHandCard([]);
-          }, //退出
+          onExit: () => {}, //退出
+        },
+        End: {
+          on: {
+            // Ready: { actions: () => {} },
+            ReStart: {
+              target: 'beforeStart',
+              actions: ['restart'],
+            },
+          },
+
+          onEntry: (context: any, event: any) => {
+            setGameState('End');
+          },
         },
       },
     },
@@ -147,6 +164,11 @@ const AppProvider = ({ children }: AppProviderProps) => {
               },
             },
           ]);
+        },
+        restart: () => {
+          setRoomID('none');
+          setGameState('beforeStart');
+          setHandCard([]);
         },
       },
     },
@@ -177,6 +199,11 @@ const AppProvider = ({ children }: AppProviderProps) => {
         setModalVisible,
         modelContent,
         setModelContent,
+
+        snackVisiable,
+        setSnackBarVisible,
+        snackContent,
+        setSnackContent,
       }}
     >
       {children}

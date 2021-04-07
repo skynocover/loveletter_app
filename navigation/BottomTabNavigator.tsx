@@ -44,6 +44,63 @@ export default function BottomTabNavigator() {
       appCtx.GameService.send('Draw', { title });
     });
 
+    socketIO.on('result', (action: string, name: string) => {
+      switch (action) {
+        case 'out':
+          if (name !== appCtx.name) {
+            appCtx.setSnackContent(`${name} out of the game!`);
+            appCtx.setSnackBarVisible(true);
+          } else {
+          }
+          break;
+
+        case 'peek':
+          appCtx.setSnackContent(`Hand card is ${name}`);
+          appCtx.setSnackBarVisible(true);
+          break;
+        case 'baron out':
+          appCtx.setSnackContent(`${name} lose by baron`);
+          appCtx.setSnackBarVisible(true);
+          break;
+        case 'prince':
+          appCtx.setSnackContent(`draw card:${name} by prince`);
+          appCtx.setHandCard([name]);
+          appCtx.setSnackBarVisible(true);
+          break;
+        case 'king':
+          appCtx.setSnackContent(`change card:${name} by king`);
+          appCtx.setHandCard([name]);
+          appCtx.setSnackBarVisible(true);
+          break;
+        case 'priness':
+          appCtx.setSnackContent(`${name} lose by play the priness`);
+          appCtx.setSnackBarVisible(true);
+          if (name === appCtx.name) {
+            appCtx.GameService.send('End');
+          }
+
+          break;
+        default:
+          break;
+      }
+    });
+
+    socketIO.on('end', (winner: any[]) => {
+      let winn: string = '';
+      for (const p of winner) {
+        winn = `${winn} ${p.name}`;
+      }
+      appCtx.setSnackContent(`${winn.trim()} win the game!`);
+      appCtx.setSnackBarVisible(true);
+    });
+
+    socketIO.on('playCard', (player: string, card: string) => {
+      if (player !== appCtx.name) {
+        appCtx.setSnackContent(`${player} play card: ${card}`);
+        appCtx.setSnackBarVisible(true);
+      }
+    });
+
     socketIO.on('Game', async (state: string, roomID: string, playersName: string[]) => {
       if (state === 'Start') {
         appCtx.GameService.send(state, { roomID, playersName });
