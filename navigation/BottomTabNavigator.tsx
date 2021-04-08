@@ -34,6 +34,26 @@ export default function BottomTabNavigator() {
 
   const navigation = useNavigation<StackNavigationProp<any>>();
 
+  const [card, setCard] = React.useState<boolean>(false);
+
+  const init = async () => {
+    let data = await appCtx.fetch('post', '/api/game/getCard', {
+      id: socketIO.id,
+      roomID: appCtx.roomID,
+    });
+    if (data) {
+      appCtx.setHandCard((prevState: string[]) => {
+        let newhandCard = [...data.handCard];
+        console.log('after get card', newhandCard);
+        return [...data.handCard];
+      });
+    }
+  };
+
+  React.useEffect(() => {
+    init();
+  }, [card]);
+
   React.useEffect(() => {
     socketIO.on('disconnect', () => {
       // navigation.push('Board');
@@ -44,7 +64,7 @@ export default function BottomTabNavigator() {
       appCtx.GameService.send('Draw', { title });
     });
 
-    socketIO.on('result', (action: string, name: string) => {
+    socketIO.on('result', async (action: string, name: string) => {
       switch (action) {
         case 'out':
           if (name !== appCtx.name) {
@@ -55,8 +75,7 @@ export default function BottomTabNavigator() {
           break;
 
         case 'peek':
-          appCtx.setSnackContent(`Hand card is ${name}`);
-          appCtx.setSnackBarVisible(true);
+          Alert.alert(`Hand card is ${name}`);
           break;
         case 'baron out':
           appCtx.setSnackContent(`${name} lose by baron`);
@@ -64,13 +83,21 @@ export default function BottomTabNavigator() {
           break;
         case 'prince':
           appCtx.setSnackContent(`draw card:${name} by prince`);
-          appCtx.setHandCard([name]);
           appCtx.setSnackBarVisible(true);
+          // appCtx.setHandCard((prevState: string[]) => {
+          //   return [name];
+          // });
+          // console.log(`draw card:${name} by prince`);
+          setCard(!card);
           break;
         case 'king':
           appCtx.setSnackContent(`change card:${name} by king`);
-          appCtx.setHandCard([name]);
           appCtx.setSnackBarVisible(true);
+          // appCtx.setHandCard((prevState: string[]) => {
+          //   return [name];
+          // });
+          // console.log(`change card:${name} by king`);
+          setCard(!card);
           break;
         case 'priness':
           appCtx.setSnackContent(`${name} lose by play the priness`);
@@ -90,8 +117,7 @@ export default function BottomTabNavigator() {
       for (const p of winner) {
         winn = `${winn} ${p.name}`;
       }
-      appCtx.setSnackContent(`${winn.trim()} win the game!`);
-      appCtx.setSnackBarVisible(true);
+      Alert.alert(`${winn.trim()} win the game!`);
     });
 
     socketIO.on('playCard', (player: string, card: string) => {

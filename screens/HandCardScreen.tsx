@@ -16,12 +16,14 @@ import {
   Paragraph,
   RadioButton,
 } from 'react-native-paper';
-import { Carousel } from '../_components/Carousel'; // Version can be specified in package.json
+// import { Carousel } from '../_components/Carousel'; // Version can be specified in package.json
+import Carousel from 'react-native-snap-carousel';
 import HandleCard from '../components/HandleCard';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { socketIO, AppContext } from '../appcontext';
 import Layout from '../constants/Layout';
 import { Socket } from 'socket.io-client';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function HandleCardScreen() {
   const appCtx = React.useContext(AppContext);
@@ -29,7 +31,6 @@ export default function HandleCardScreen() {
   const [targetIndex, setTargetIndex] = React.useState(0);
 
   const [subTitle, setSubTitle] = React.useState<string>('');
-  const [playbool, setPlaybool] = React.useState<boolean>(false);
 
   const _renderItem = ({ item, index }: any) => {
     return <HandleCard {...getCardContent(item)} />;
@@ -45,21 +46,29 @@ export default function HandleCardScreen() {
     });
   };
 
-  React.useEffect(() => {
-    const init = async () => {
-      let data = await appCtx.fetch('post', '/api/game/getCard', {
-        id: socketIO.id,
-        roomID: appCtx.roomID,
+  const init = async () => {
+    let data = await appCtx.fetch('post', '/api/game/getCard', {
+      id: socketIO.id,
+      roomID: appCtx.roomID,
+    });
+    if (data) {
+      appCtx.setHandCard((prevState: string[]) => {
+        let newhandCard = [...data.handCard];
+        console.log('after get card', newhandCard);
+        return [...data.handCard];
       });
-      if (data) {
-        appCtx.setHandCard((prevState: string[]) => {
-          let newhandCard = [...data.handCard];
-          console.log('after draw card', newhandCard);
-          return newhandCard;
-        });
-      }
-    };
+      // console.log('!!!!!!!!!!!!!  init 222222 !!!!!!!!!!!!!!!!!', data.handCard);
+      // appCtx.GameService.send('Card', { handCard: data.handCard });
+    }
+  };
 
+  useFocusEffect(
+    React.useCallback(() => {
+      init();
+    }, []),
+  );
+
+  React.useEffect(() => {
     init();
   }, [appCtx.modelVisiable]);
 
@@ -188,7 +197,11 @@ export default function HandleCardScreen() {
           onSnapToItem={onSnap}
           data={appCtx.handCard}
           renderItem={_renderItem}
-          webRenderItem={_webRenderItem}
+          sliderWidth={Layout.window.width}
+          itemWidth={Layout.window.width * 0.8}
+          layout={'default'}
+          extraData={appCtx.handCard}
+          // webRenderItem={_webRenderItem}
         />
       </View>
       <Provider>
@@ -259,10 +272,15 @@ const Select = ({ index }: { index: number }) => {
   }, []);
 
   const getRoommate = async () => {
-    let data = await appCtx.fetch('get', `/api/opponent/${appCtx.roomID}`);
+    let data = await appCtx.fetch('get', `/api/players/${appCtx.roomID}`);
     if (data) {
       if (data.players !== undefined) {
-        let mate = data.players.filter((item: any) => item.name !== appCtx.name && !item.shield);
+        let mate: any;
+        if (appCtx.handCard[index] === 'prince') {
+          mate = data.players.filter((item: any) => !item.shield);
+        } else {
+          mate = data.players.filter((item: any) => item.name !== appCtx.name && !item.shield);
+        }
 
         let mate2: string[] = [];
         mate.map((item: any) => {
