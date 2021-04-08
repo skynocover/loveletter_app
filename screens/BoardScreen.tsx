@@ -122,18 +122,18 @@ export default function BoardScreen() {
     };
   }, []);
 
-  const regist = async () => {
-    if (appCtx.name === '') {
-      Alert.alert('請輸入使用者名稱');
-      return;
-    }
-    let data = await appCtx.fetch('post', '/api/players', {
-      player: { id: socketIO.id, name: appCtx.name },
-    });
-    if (data) {
-      setCheck(true);
-    }
-  };
+  // const regist = async () => {
+  //   if (appCtx.name === '') {
+  //     Alert.alert('請輸入使用者名稱');
+  //     return;
+  //   }
+  //   let data = await appCtx.fetch('post', '/api/players', {
+  //     player: { id: socketIO.id, name: appCtx.name },
+  //   });
+  //   if (data) {
+  //     setCheck(true);
+  //   }
+  // };
 
   const readybtm = async () => {
     let data: Promise<any>;
@@ -175,26 +175,25 @@ export default function BoardScreen() {
       </Appbar.Header>
       <TextInput
         label="Name"
-        disabled={check}
+        disabled={true}
         value={appCtx.name}
-        onChangeText={(text) => {
-          appCtx.setName(text);
-        }}
+        // onChangeText={(text) => {
+        //   appCtx.setName(text);
+        // }}
       />
-      {!check ? (
+      {/* {!check ? (
         <Button icon="login" mode="contained" onPress={regist}>
           註冊使用者
         </Button>
-      ) : (
-        appCtx.gameState === 'beforeStart' && (
-          <Button
-            icon={ready ? 'checkbox-marked' : 'checkbox-blank-off'}
-            mode="contained"
-            onPress={readybtm}
-          >
-            {ready ? '已準備' : '準備中'}
-          </Button>
-        )
+      ) : ( */}
+      {appCtx.gameState === 'beforeStart' && (
+        <Button
+          icon={ready ? 'checkbox-marked' : 'checkbox-blank-off'}
+          mode="contained"
+          onPress={readybtm}
+        >
+          {ready ? '已準備' : '準備中'}
+        </Button>
       )}
 
       <FlatList
@@ -208,7 +207,7 @@ export default function BoardScreen() {
       <Button
         icon={'arrow-right-bold-circle'}
         mode="contained"
-        disabled={!check}
+        // disabled={!check}
         onPress={startGame}
       >
         {appCtx.gameState === 'beforeStart' ? '開始遊戲' : '重新開始'}

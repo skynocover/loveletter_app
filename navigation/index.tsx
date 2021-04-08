@@ -9,6 +9,7 @@ import BottomTabNavigator from './BottomTabNavigator';
 import LinkingConfiguration from './LinkingConfiguration';
 import { Modal, Portal, Text, Button, Snackbar } from 'react-native-paper';
 import { socketIO, AppContext } from '../appcontext';
+import LoginNavigator from './LoginNavigator';
 // If you are not familiar with React Navigation, we recommend going through the
 // "Fundamentals" guide: https://reactnavigation.org/docs/getting-started
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
@@ -19,7 +20,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
         linking={LinkingConfiguration}
         theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
       >
-        <RootNavigator />
+        {appCtx.login ? <RootNavigator /> : <LoginNavigator />}
       </NavigationContainer>
       <Snackbar
         visible={appCtx.snackVisiable}

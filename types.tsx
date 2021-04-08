@@ -3,6 +3,10 @@ export type RootStackParamList = {
   NotFound: undefined;
 };
 
+export type LoginStackParamList = {
+  Login: undefined;
+};
+
 export type BottomTabParamList = {
   HandCard: undefined;
   Board: undefined;
@@ -26,3 +30,7 @@ export type HistoryParamList = {
 export type RuleParamList = {
   RuleScreen: undefined;
 };
+
+// export type LoginParamList = {
+//   LoginScreen: undefined;
+// };
