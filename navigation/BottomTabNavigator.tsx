@@ -36,22 +36,10 @@ export default function BottomTabNavigator() {
 
   const [card, setCard] = React.useState<boolean>(false);
 
-  const init = async () => {
-    let data = await appCtx.fetch('post', '/api/game/getCard', {
-      id: socketIO.id,
-      roomID: appCtx.roomID,
-    });
-    if (data) {
-      appCtx.setHandCard((prevState: string[]) => {
-        let newhandCard = [...data.handCard];
-        console.log('after get card', newhandCard);
-        return [...data.handCard];
-      });
-    }
-  };
-
   React.useEffect(() => {
-    init();
+    if (appCtx.gameState !== 'beforeStart') {
+      appCtx.getCard();
+    }
   }, [card]);
 
   React.useEffect(() => {
@@ -71,6 +59,7 @@ export default function BottomTabNavigator() {
             appCtx.setSnackContent(`${name} out of the game!`);
             appCtx.setSnackBarVisible(true);
           } else {
+            appCtx.regist();
           }
           break;
 

@@ -46,30 +46,19 @@ export default function HandleCardScreen() {
     });
   };
 
-  const init = async () => {
-    let data = await appCtx.fetch('post', '/api/game/getCard', {
-      id: socketIO.id,
-      roomID: appCtx.roomID,
-    });
-    if (data) {
-      appCtx.setHandCard((prevState: string[]) => {
-        let newhandCard = [...data.handCard];
-        console.log('after get card', newhandCard);
-        return [...data.handCard];
-      });
-      // console.log('!!!!!!!!!!!!!  init 222222 !!!!!!!!!!!!!!!!!', data.handCard);
-      // appCtx.GameService.send('Card', { handCard: data.handCard });
-    }
-  };
-
   useFocusEffect(
     React.useCallback(() => {
-      init();
+      if (appCtx.gameState !== 'beforeStart') {
+        // init();
+        appCtx.getCard();
+      }
     }, []),
   );
 
   React.useEffect(() => {
-    init();
+    if (appCtx.gameState !== 'beforeStart') {
+      appCtx.getCard();
+    }
   }, [appCtx.modelVisiable]);
 
   const playCard = async () => {
@@ -295,6 +284,31 @@ const Select = ({ index }: { index: number }) => {
   const check = async () => {
     appCtx.setModalVisible(false);
 
+    switch (handCardType) {
+      case 'guard':
+        if (roommate.length > 0 && (selectCard === '' || selectOpponent === '')) {
+          Alert.alert('請至少選擇一名對手或手牌');
+          return;
+        }
+        break;
+
+      case 'priest':
+      case 'prince':
+      case 'king':
+        if (roommate.length > 0 && selectOpponent === '') {
+          Alert.alert('請至少選擇一名對手');
+          return;
+        }
+        break;
+
+      default:
+        break;
+    }
+
+    if (appCtx.gameState !== 'roundStart') {
+      return;
+    }
+
     let data = await appCtx.fetch('post', '/api/game/playCard', {
       id: socketIO.id,
       roomID: appCtx.roomID,
@@ -307,7 +321,7 @@ const Select = ({ index }: { index: number }) => {
 
     if (data) {
       console.log(`success resp play card, index: ${index}`);
-      appCtx.setHandCard([]);
+      // appCtx.setHandCard([]);
       // appCtx.setHandCard((preState) => preState.splice(index - 1, 1));
     }
   };

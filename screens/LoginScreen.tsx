@@ -1,49 +1,44 @@
 import * as React from 'react';
 import { StyleSheet, Alert, FlatList, RefreshControl } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import EditScreenInfo from '../components/EditScreenInfo';
-import { Text, View } from '../components/Themed';
 import { Appbar, Avatar, Button, Card, Title, Paragraph, TextInput } from 'react-native-paper';
-import { Carousel } from '../_components/Carousel'; // Version can be specified in package.json
-import HandleCard from '../components/HandleCard';
 import { StackNavigationProp } from '@react-navigation/stack';
+
+import { Text, View } from '../components/Themed';
+
 import { socketIO, AppContext } from '../appcontext';
 import { Icon } from '../components/Icon';
-
-import { useFocusEffect } from '@react-navigation/native';
+import Layout from '../constants/Layout';
 
 export default function LoginScreen() {
   const appCtx = React.useContext(AppContext);
 
   const navigation = useNavigation<StackNavigationProp<any>>();
 
-  const regist = async () => {
-    if (appCtx.name === '') {
-      Alert.alert('請輸入使用者名稱');
-      return;
-    }
-    let data = await appCtx.fetch('post', '/api/players', {
-      player: { id: socketIO.id, name: appCtx.name },
-    });
-    if (data) {
-      appCtx.setLogin(true);
-    }
-  };
+  const styles = StyleSheet.create({
+    header: { backgroundColor: '#CD5C5C', height: Layout.window.height * 0.25 },
+    input: {
+      marginTop: Layout.window.height * 0.1,
+      marginHorizontal: Layout.window.width * 0.1,
+    },
+    button: { marginHorizontal: Layout.window.width * 0.1 },
+    title: { fontStyle: 'italic', fontWeight: 'bold', fontSize: 35 },
+  });
 
   return (
     <>
-      <Appbar.Header style={{ backgroundColor: '#CD5C5C' }}>
-        <Appbar.Content title="Login" />
+      <Appbar.Header style={styles.header}>
+        <Appbar.Content title="Love Letter" titleStyle={styles.title} />
       </Appbar.Header>
       <TextInput
         label="Name"
         value={appCtx.name}
-        onChangeText={(text) => {
-          appCtx.setName(text);
-        }}
+        onChangeText={(text) => appCtx.setName(text)}
+        style={styles.input}
       />
-      <Button icon="login" mode="contained" onPress={regist}>
-        註冊使用者
+      <View style={{ marginVertical: 5 }} />
+      <Button mode="contained" onPress={appCtx.regist} style={styles.button} color={'#CD5C5C'}>
+        login
       </Button>
     </>
   );

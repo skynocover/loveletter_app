@@ -4,7 +4,8 @@ import { StyleSheet, FlatList, Image } from 'react-native';
 import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
 import { Appbar, Avatar, Button, Card, Title, Paragraph, List } from 'react-native-paper';
-import { Carousel } from '../_components/Carousel';
+// import { Carousel } from '../_components/Carousel';
+import Carousel from 'react-native-snap-carousel';
 import Layout from '../constants/Layout';
 
 const cards: any = require('../assets/images/usa/cards.png');
@@ -60,7 +61,13 @@ export default function RuleScreen() {
       <Appbar.Header style={{ backgroundColor: '#CD5C5C', margin: 0 }}>
         <Appbar.Content title="Rules" />
       </Appbar.Header>
-      <Carousel data={data} renderItem={_renderItem} webRenderItem={_webRenderItem} />
+      <Carousel
+        data={data}
+        renderItem={_renderItem}
+        sliderWidth={Layout.window.width}
+        itemWidth={Layout.window.width * 0.8}
+        layout={'default'}
+      />
     </>
   );
 }

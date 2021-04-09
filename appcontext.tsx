@@ -5,8 +5,8 @@ import { Alert, Platform } from 'react-native';
 
 import { Interpreter, AnyEventObject, Machine, interpret } from 'xstate';
 
-// const url = 'http://192.168.99.162:3002';
-const url = 'http://192.168.0.113:3002';
+const url = 'http://192.168.99.162:3002';
+// const url = 'http://192.168.0.113:3002';
 
 export const socketIO = io(Platform.OS === 'web' ? '/' : url);
 
@@ -39,6 +39,8 @@ interface AppContextProps {
   setSnackContent: React.Dispatch<React.SetStateAction<string>>;
   login: boolean;
   setLogin: React.Dispatch<React.SetStateAction<boolean>>;
+  getCard: () => Promise<void>;
+  regist: () => Promise<void>
 }
 
 const AppContext = React.createContext<AppContextProps>(undefined!);
@@ -53,7 +55,17 @@ const AppProvider = ({ children }: AppProviderProps) => {
   const [roomID, setRoomID] = React.useState<string>('none');
   const [gameState, setGameState] = React.useState<string>('beforeStart');
 
-  const [handCard, setHandCard] = React.useState<string[]>([]);
+  const initHandCard = [
+    'guard',
+    'priest',
+    'baron',
+    'handmaid',
+    'prince',
+    'king',
+    'countess',
+    'priness',
+  ];
+  const [handCard, setHandCard] = React.useState<string[]>(initHandCard);
   const [roommate, setRoommate] = React.useState<string[]>([]);
 
   const [modelVisiable, setModalVisible] = React.useState<boolean>(false);
@@ -94,6 +106,34 @@ const AppProvider = ({ children }: AppProviderProps) => {
     return data;
   };
 
+  const getCard = async () => {
+    let data = await fetch('post', '/api/game/getCard', {
+      id: socketIO.id,
+      roomID: roomID,
+    });
+    if (data) {
+      setHandCard((prevState: string[]) => {
+        let newhandCard = [...data.handCard];
+        console.log('after get card', newhandCard);
+        return [...data.handCard];
+      });
+    }
+  };
+
+  const regist = async () => {
+    if (name === '') {
+      Alert.alert('請輸入使用者名稱');
+      return;
+    }
+    let data = await fetch('post', '/api/players', {
+      player: { id: socketIO.id, name: name },
+    });
+    if (data) {
+      setLogin(true);
+    }
+  };
+
+
   const GameMachine = Machine(
     {
       id: 'game',
@@ -104,10 +144,8 @@ const AppProvider = ({ children }: AppProviderProps) => {
             Start: 'roundStart',
             Draw: {
               actions: (context: any, event: any) => {
-                let title = event.title;
-
                 setHandCard((prevState: string[]) => {
-                  let newhandCard = [...prevState, title];
+                  let newhandCard = [event.title];
                   return newhandCard;
                 });
               },
@@ -116,7 +154,6 @@ const AppProvider = ({ children }: AppProviderProps) => {
         },
         roundStart: {
           on: {
-            // Ready: { actions: () => {} },
             ReStart: {
               target: 'beforeStart',
               actions: ['restart'],
@@ -132,14 +169,12 @@ const AppProvider = ({ children }: AppProviderProps) => {
               return roomID;
             });
             setRoommate(roommate);
-
             setGameState('roundStart');
           },
           onExit: () => {}, //退出
         },
         End: {
           on: {
-            // Ready: { actions: () => {} },
             ReStart: {
               target: 'beforeStart',
               actions: ['restart'],
@@ -172,7 +207,7 @@ const AppProvider = ({ children }: AppProviderProps) => {
         restart: () => {
           setRoomID('none');
           setGameState('beforeStart');
-          setHandCard([]);
+          setHandCard(initHandCard);
         },
       },
     },
@@ -210,6 +245,8 @@ const AppProvider = ({ children }: AppProviderProps) => {
         setSnackContent,
         login,
         setLogin,
+        getCard,
+        regist,
       }}
     >
       {children}
@@ -218,5 +255,3 @@ const AppProvider = ({ children }: AppProviderProps) => {
 };
 
 export { AppContext, AppProvider };
-
-/////////////////// machine ////////////////////

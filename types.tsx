@@ -30,7 +30,3 @@ export type HistoryParamList = {
 export type RuleParamList = {
   RuleScreen: undefined;
 };
-
-// export type LoginParamList = {
-//   LoginScreen: undefined;
-// };
