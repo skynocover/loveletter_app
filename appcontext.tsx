@@ -5,8 +5,8 @@ import { Alert, Platform } from 'react-native';
 
 import { Interpreter, AnyEventObject, Machine, interpret } from 'xstate';
 
-const url = 'http://192.168.99.162:3002';
-// const url = 'http://192.168.0.113:3002';
+// const url = 'http://192.168.99.162:3002';
+const url = 'http://192.168.0.113:3002';
 
 export const socketIO = io(Platform.OS === 'web' ? '/' : url);
 
@@ -40,7 +40,7 @@ interface AppContextProps {
   login: boolean;
   setLogin: React.Dispatch<React.SetStateAction<boolean>>;
   getCard: () => Promise<void>;
-  regist: () => Promise<void>
+  regist: () => Promise<void>;
 }
 
 const AppContext = React.createContext<AppContextProps>(undefined!);
@@ -132,7 +132,6 @@ const AppProvider = ({ children }: AppProviderProps) => {
       setLogin(true);
     }
   };
-
 
   const GameMachine = Machine(
     {

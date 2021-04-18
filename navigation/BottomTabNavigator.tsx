@@ -73,19 +73,17 @@ export default function BottomTabNavigator() {
         case 'prince':
           appCtx.setSnackContent(`draw card:${name} by prince`);
           appCtx.setSnackBarVisible(true);
-          // appCtx.setHandCard((prevState: string[]) => {
-          //   return [name];
-          // });
-          // console.log(`draw card:${name} by prince`);
+          appCtx.setHandCard((prevState: string[]) => {
+            return [name];
+          });
           setCard(!card);
           break;
         case 'king':
           appCtx.setSnackContent(`change card:${name} by king`);
           appCtx.setSnackBarVisible(true);
-          // appCtx.setHandCard((prevState: string[]) => {
-          //   return [name];
-          // });
-          // console.log(`change card:${name} by king`);
+          appCtx.setHandCard((prevState: string[]) => {
+            return [name];
+          });
           setCard(!card);
           break;
         case 'priness':
